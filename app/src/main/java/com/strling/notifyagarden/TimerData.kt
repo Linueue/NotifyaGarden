@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.update
 data class TimerData(
     var minute: Int,
     var seconds: Int,
-    var refetch: Boolean,
+    var startTime: Long,
 )
 
 class Timer {
-    val _uiState = MutableStateFlow(TimerData(0, 0, false))
+    val _uiState: MutableStateFlow<Long> = MutableStateFlow(0)
     val uiState = _uiState.asStateFlow()
 
     fun formatTimer(timer: TimerData): String
@@ -24,6 +24,17 @@ class Timer {
     }
 
     suspend fun start(startTime: Long)
+    {
+        val time = startTime / 1000
+        val currentTime = System.currentTimeMillis() / 1000
+        val next = (5 * 60) - (currentTime - time)
+        _uiState.update {
+            startTime
+        }
+        delay(next * 1000)
+    }
+
+    suspend fun startLegacy(startTime: Long)
     {
         if(startTime == 0L)
             return
@@ -38,7 +49,7 @@ class Timer {
             val minute = minuteFloat.toInt()
             val seconds = ((minuteFloat - minute) * 60).toInt()
             println("Diff: $diff, next: $next, minute: $minute, seconds: $seconds")
-            currentState.copy(minute, seconds, false)
+            currentState
         }
 
         var isFinished = false
@@ -46,21 +57,7 @@ class Timer {
         {
             delay(1000)
             _uiState.update { currentState ->
-                var minute = currentState.minute
-                var seconds = currentState.seconds - 1
-                var refetch = currentState.refetch
-                if (seconds < 0) {
-                    if(minute == 0)
-                    {
-                        seconds = 0
-                        refetch = true
-                        isFinished = true
-                    } else {
-                        minute--
-                        seconds = 60 - 1
-                    }
-                }
-                currentState.copy(minute, seconds, refetch)
+                currentState
             }
         }
     }

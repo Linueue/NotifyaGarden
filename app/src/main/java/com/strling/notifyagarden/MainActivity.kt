@@ -163,6 +163,7 @@ class MainActivity : ComponentActivity() {
     fun content()
     {
         val connection = remember { ExpandableAppBarConnection(TOP_BAR_HEIGHT) }
+        val timerViewModel: TimerViewModel by viewModels()
         val editMode = remember { mutableStateOf(false) }
         Scaffold(topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -174,7 +175,11 @@ class MainActivity : ComponentActivity() {
             {
                 fetchButtons()
                 val uiState = ServiceData.growAGarden.uiState.collectAsState()
-                val timerState = ServiceData.timer.uiState.collectAsState()
+                val timerState = timerViewModel.uiState.collectAsState()
+
+                LaunchedEffect(ServiceData.timer.uiState.collectAsState().value) {
+                    timerViewModel.updateTimer()
+                }
 
                 Column(
                     modifier = Modifier.fillMaxWidth().height(88.dp).padding(5.dp).clip(
