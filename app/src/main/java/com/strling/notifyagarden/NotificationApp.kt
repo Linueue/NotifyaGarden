@@ -13,7 +13,7 @@ class NotificationApp: Application() {
             val channel = NotificationChannel(
                 "notify_a_garden",
                 "Notify a Garden",
-                NotificationManager.IMPORTANCE_DEFAULT,
+                NotificationManager.IMPORTANCE_HIGH,
             )
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
