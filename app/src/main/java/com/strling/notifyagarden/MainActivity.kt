@@ -165,6 +165,7 @@ class MainActivity : ComponentActivity() {
         val connection = remember { ExpandableAppBarConnection(TOP_BAR_HEIGHT) }
         val timerViewModel: TimerViewModel by viewModels()
         val editMode = remember { mutableStateOf(false) }
+        val scheduler = NotifyAlarmManager(this)
         Scaffold(topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 expandedAppBar(height = connection.appBarHeight, editable = editMode)
@@ -173,7 +174,7 @@ class MainActivity : ComponentActivity() {
         }, modifier = Modifier.fillMaxSize().nestedScroll(connection), containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
             Column(modifier = Modifier.fillMaxSize().padding(innerPadding).background(MaterialTheme.colorScheme.background).verticalScroll(rememberScrollState()))
             {
-                fetchButtons()
+                fetchButtons(scheduler)
                 val uiState = ServiceData.growAGarden.uiState.collectAsState()
                 val timerState = timerViewModel.uiState.collectAsState()
 
@@ -220,14 +221,18 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun fetchButtons()
+    fun fetchButtons(scheduler: NotifyAlarmManager)
     {
         Button(onClick = {
-            Intent(applicationContext, NotificationService::class.java).also {
-                it.action = if(!ServiceState.isServiceRunning.value) NotificationService.Actions.START.toString() else NotificationService.Actions.STOP.toString()
+            if(!ServiceState.isServiceRunning.value)
+                scheduler.schedule(0, ServiceData.growAGarden.favorites.value)
+            else
+                scheduler.cancel()
+            //Intent(applicationContext, NotificationService::class.java).also {
+            //    it.action = if(!ServiceState.isServiceRunning.value) NotificationService.Actions.START.toString() else NotificationService.Actions.STOP.toString()
 
-                startService(it)
-            }
+            //    startService(it)
+            //}
         },
             colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.surface),
             modifier = Modifier.fillMaxWidth().height(80.dp).padding(5.dp).clip(
@@ -314,7 +319,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun collapsedAppBar(modifier: Modifier = Modifier, height: Int, editable: MutableState<Boolean>)
+    fun collapsedAppBar(modifier: Modifier = Modifier, height: Int, editable: MutableState<Boolean>, scheduler: NotifyAlarmManager)
     {
         var progress = (height / TOP_BAR_HEIGHT.toFloat()).coerceIn(0.0f, 1.0f)
         progress = 2.0f * (progress)
@@ -328,7 +333,16 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Text(title, fontWeight = FontWeight.Bold, modifier = Modifier.graphicsLayer { alpha = (1.0f - progress) })
                     Spacer(modifier = Modifier.weight(1.0f))
-                    IconButton(onClick = {editable.value = !editable.value}) {
+                    IconButton(onClick = {
+                        editable.value = !editable.value
+
+                        if(!editable.value && ServiceState.isServiceRunning.value)
+                        {
+                            scheduler.cancel()
+                            val time = ServiceData.timer.getTime(ServiceData.growAGarden.uiState.value.updatedAt)
+                            scheduler.schedule(time, ServiceData.growAGarden.favorites.value)
+                        }
+                    }) {
                         Icon(
                             modifier = Modifier.size(24.dp),
                             contentDescription = "Edit",

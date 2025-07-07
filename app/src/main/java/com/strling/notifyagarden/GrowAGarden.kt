@@ -51,9 +51,14 @@ class GrowAGarden {
         }
     }
 
-    fun notifyFavorites(fn: (Item) -> Unit)
+    fun saveState()
     {
-        for(favorite in favorites.value)
+
+    }
+
+    fun notifyFavorites(fn: (Item) -> Unit, favorites: Set<String>)
+    {
+        for(favorite in favorites)
         {
             if(uiState.value.seedShop.items.containsKey(favorite))
                 fn(uiState.value.seedShop.items[favorite]!!)
@@ -108,7 +113,7 @@ class GrowAGarden {
         addSeedShopView("Dragon Fruit", 0xFFFF2E93, "🥝")
         addSeedShopView("Mango", 0xFFFFC324, "🥭")
         addSeedShopView("Grape", 0xFF6F2DA8, "🍇")
-        addSeedShopView("Mushroom", 0xFFDAB9, "🍄")
+        addSeedShopView("Mushroom", 0xFFFFDAB9, "🍄")
         addSeedShopView("Pepper", 0xFFFF0000, "🌶️")
         addSeedShopView("Beanstalk", 0xFF3CB371, "🌿")
         addSeedShopView("Ember Lily", 0xFFFF4500, "🌺")

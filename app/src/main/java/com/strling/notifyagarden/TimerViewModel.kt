@@ -20,12 +20,16 @@ class TimerViewModel: ViewModel() {
     {
         if(ServiceData.timer.uiState.value == 0L)
             return
+        println(ServiceData.growAGarden.favorites.value)
 
         _job?.cancel()
         _job = viewModelScope.launch {
             val startTime = ServiceData.timer.uiState.value / 1000.0
             while(true)
             {
+                if(!ServiceState.isServiceRunning.value)
+                    break
+
                 val currentTime = System.currentTimeMillis() / 1000.0
                 val diff = (60 * 5) - (currentTime - startTime)
                 val minutesFloat = diff / 60

@@ -34,6 +34,17 @@ class Timer {
         delay(next * 1000)
     }
 
+    fun getTime(startTime: Long): Long
+    {
+        val time = startTime / 1000
+        val currentTime = System.currentTimeMillis() / 1000
+        val next = (5 * 60) - (currentTime - time)
+        _uiState.update {
+            startTime
+        }
+        return ((currentTime + next) * 1000)
+    }
+
     suspend fun startLegacy(startTime: Long)
     {
         if(startTime == 0L)
