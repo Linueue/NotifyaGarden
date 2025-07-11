@@ -164,7 +164,6 @@ class MainActivity : ComponentActivity() {
         LaunchedEffect(Unit)
         {
             val isRunning = scheduler.isRunning()
-            println("IsRunning: " + isRunning)
             NotifyState.setNotifyRunning(isRunning)
             timerViewModel.fetchIfRunning()
         }

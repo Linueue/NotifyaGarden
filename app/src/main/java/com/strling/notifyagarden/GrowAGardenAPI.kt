@@ -10,14 +10,6 @@ import okhttp3.Request
 import okio.IOException
 
 @Serializable
-data class StocksResponseLegacy (
-    val updatedAt: Long,
-    val gear: List<String>,
-    val seeds: List<String>,
-    val egg: List<String>,
-)
-
-@Serializable
 data class ItemResponse (
     val name: String,
     val value: Int,
@@ -84,19 +76,15 @@ class GrowAGardenAPI {
     suspend fun fetchStocks(): GrowAGardenData
     {
         val data = GrowAGardenData()
-        println("getStock()")
         val response: StocksResponse = requestStocks()
-        println("Finish getStock()")
 
         data.updatedAt = response.lastApiFetch
 
-        println("parse()")
         for(seed in response.seedsStock)
         {
             val item: Item = parse(seed)
             data.seedShop.items[item.name] = item
         }
-        println("Finish parse()")
 
         for(gear in response.gearStock)
         {
