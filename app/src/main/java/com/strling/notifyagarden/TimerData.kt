@@ -23,17 +23,6 @@ class Timer {
         return "${minute}:${seconds}"
     }
 
-    suspend fun start(startTime: Long)
-    {
-        val time = startTime / 1000
-        val currentTime = System.currentTimeMillis() / 1000
-        val next = (5 * 60) - (currentTime - time)
-        _uiState.update {
-            startTime
-        }
-        delay(next * 1000)
-    }
-
     fun resetTime()
     {
         _uiState.update {
@@ -50,33 +39,5 @@ class Timer {
             startTime
         }
         return ((currentTime + next) * 1000)
-    }
-
-    suspend fun startLegacy(startTime: Long)
-    {
-        if(startTime == 0L)
-            return
-        val time = startTime / 1000
-        val currentTime = System.currentTimeMillis() / 1000
-        println("currentTime: ${currentTime}, time: ${time}")
-
-        _uiState.update { currentState ->
-            val diff = currentTime - time
-            val next = (5 * 60) - diff
-            val minuteFloat = (next / 60.0f)
-            val minute = minuteFloat.toInt()
-            val seconds = ((minuteFloat - minute) * 60).toInt()
-            println("Diff: $diff, next: $next, minute: $minute, seconds: $seconds")
-            currentState
-        }
-
-        var isFinished = false
-        while(!isFinished)
-        {
-            delay(1000)
-            _uiState.update { currentState ->
-                currentState
-            }
-        }
     }
 }

@@ -21,7 +21,7 @@ class NotifyAlarmManager(private val context: Context) {
 
     fun schedule(time: Long, favorites: Set<String>)
     {
-        ServiceState.setServiceRunning(true)
+        NotifyState.setNotifyRunning(true)
         val intent = Intent(context, NotifyBroadcast::class.java).apply {
             putStringArrayListExtra("favorites", favorites.toCollection(ArrayList()))
             action = "com.strling.notifyagarden.NOTIFY_ACTION"
@@ -40,7 +40,7 @@ class NotifyAlarmManager(private val context: Context) {
 
     fun cancel()
     {
-        ServiceState.setServiceRunning(false)
+        NotifyState.setNotifyRunning(false)
         val intent = Intent(context, NotifyBroadcast::class.java).apply {
             action = "com.strling.notifyagarden.NOTIFY_ACTION"
         }

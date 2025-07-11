@@ -1,7 +1,6 @@
 package com.strling.notifyagarden
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -12,8 +11,6 @@ import androidx.activity.viewModels
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -53,17 +50,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.lerp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
@@ -168,12 +160,12 @@ class MainActivity : ComponentActivity() {
         val scheduler = NotifyAlarmManager(this)
         val preferences = NotifyDataStore(this)
         val favorites = preferences.favorites.collectAsState(emptySet())
-        ServiceData.growAGarden.favorites.value = favorites.value
+        NotifyData.game.favorites.value = favorites.value
         LaunchedEffect(Unit)
         {
             val isRunning = scheduler.isRunning()
             println("IsRunning: " + isRunning)
-            ServiceState.setServiceRunning(isRunning)
+            NotifyState.setNotifyRunning(isRunning)
             timerViewModel.fetchIfRunning()
         }
         Scaffold(topBar = {
@@ -185,10 +177,10 @@ class MainActivity : ComponentActivity() {
             Column(modifier = Modifier.fillMaxSize().padding(innerPadding).background(MaterialTheme.colorScheme.background).verticalScroll(rememberScrollState()))
             {
                 fetchButtons(scheduler, preferences)
-                val uiState = ServiceData.growAGarden.uiState.collectAsState()
+                val uiState = NotifyData.game.uiState.collectAsState()
                 val timerState = timerViewModel.uiState.collectAsState()
 
-                LaunchedEffect(ServiceData.timer.uiState.collectAsState().value) {
+                LaunchedEffect(NotifyData.timer.uiState.collectAsState().value) {
                     timerViewModel.updateTimer()
                 }
 
@@ -202,21 +194,21 @@ class MainActivity : ComponentActivity() {
                 )
                 {
                     Text("Next Restock", fontSize = 16.sp)
-                    Text(ServiceData.timer.formatTimer(timerState.value), fontSize = 20.sp)
+                    Text(NotifyData.timer.formatTimer(timerState.value), fontSize = 20.sp)
                 }
 
-                val views = ServiceData.growAGarden.getData(uiState.value, ServiceData.growAGarden.favorites)
+                val views = NotifyData.game.getData(uiState.value, NotifyData.game.favorites)
                 Text("Seeds", fontSize = 14.sp, modifier = Modifier.padding(15.dp, 0.dp).graphicsLayer { alpha = 0.8f })
                 views.seeds.forEach { view ->
-                    displayShopView(view, editMode, ServiceData.growAGarden.favorites)
+                    displayShopView(view, editMode, NotifyData.game.favorites)
                 }
                 Text("Gears", fontSize = 14.sp, modifier = Modifier.padding(15.dp, 0.dp).graphicsLayer { alpha = 0.8f })
                 views.gears.forEach { view ->
-                    displayShopView(view, editMode, ServiceData.growAGarden.favorites)
+                    displayShopView(view, editMode, NotifyData.game.favorites)
                 }
                 Text("Eggs", fontSize = 14.sp, modifier = Modifier.padding(15.dp, 0.dp).graphicsLayer { alpha = 0.8f })
                 views.eggs.forEach { view ->
-                    displayShopView(view, editMode, ServiceData.growAGarden.favorites)
+                    displayShopView(view, editMode, NotifyData.game.favorites)
                 }
             }
         }
@@ -234,8 +226,8 @@ class MainActivity : ComponentActivity() {
     fun fetchButtons(scheduler: NotifyAlarmManager, preferences: NotifyDataStore)
     {
         Button(onClick = {
-            if(!ServiceState.isServiceRunning.value)
-                scheduler.schedule(0, ServiceData.growAGarden.favorites.value)
+            if(!NotifyState.isNotifyRunning.value)
+                scheduler.schedule(0, NotifyData.game.favorites.value)
             else
                 scheduler.cancel()
             //Intent(applicationContext, NotificationService::class.java).also {
@@ -252,7 +244,7 @@ class MainActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center)
             {
-                val text = if(!ServiceState.isServiceRunning.value) "Fetch" else "Stop"
+                val text = if(!NotifyState.isNotifyRunning.value) "Fetch" else "Stop"
                 Text(text, modifier = Modifier.padding(12.dp))
             }
         }
@@ -346,12 +338,12 @@ class MainActivity : ComponentActivity() {
                     IconButton(onClick = {
                         editable.value = !editable.value
 
-                        if(!editable.value && ServiceState.isServiceRunning.value)
+                        if(!editable.value && NotifyState.isNotifyRunning.value)
                         {
-                            ServiceData.growAGarden.saveFavorites(preferences)
+                            NotifyData.game.saveFavorites(preferences)
                             scheduler.cancel()
-                            val time = ServiceData.timer.getTime(ServiceData.growAGarden.uiState.value.updatedAt)
-                            scheduler.schedule(time, ServiceData.growAGarden.favorites.value)
+                            val time = NotifyData.timer.getTime(NotifyData.game.uiState.value.updatedAt)
+                            scheduler.schedule(time, NotifyData.game.favorites.value)
                         }
                     }) {
                         Icon(

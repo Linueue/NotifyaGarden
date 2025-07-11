@@ -31,11 +31,11 @@ class NotifyBroadcast: BroadcastReceiver() {
             }
         }
         CoroutineScope(Dispatchers.IO).launch {
-            val fetched = ServiceData.growAGarden.fetchStocks()
+            val fetched = NotifyData.game.fetchStocks()
             var time = System.currentTimeMillis() + (5 * 60 * 1000)
             if(fetched) {
-                ServiceData.growAGarden.notifyFavorites(favoriteAvailableFn, favorites)
-                time = ServiceData.timer.getTime(ServiceData.growAGarden.uiState.value.updatedAt)
+                NotifyData.game.notifyFavorites(favoriteAvailableFn, favorites)
+                time = NotifyData.timer.getTime(NotifyData.game.uiState.value.updatedAt)
             }
 
             val scheduler = NotifyAlarmManager(context!!)

@@ -18,21 +18,21 @@ class TimerViewModel: ViewModel() {
 
     fun updateTimer()
     {
-        if(ServiceData.timer.uiState.value == 0L)
+        if(NotifyData.timer.uiState.value == 0L)
             return
-        println(ServiceData.growAGarden.favorites.value)
+        println(NotifyData.game.favorites.value)
 
         _job?.cancel()
         _job = viewModelScope.launch {
-            val startTime = ServiceData.timer.uiState.value / 1000.0
+            val startTime = NotifyData.timer.uiState.value / 1000.0
             while(true)
             {
-                if(!ServiceState.isServiceRunning.value) {
+                if(!NotifyState.isNotifyRunning.value) {
                     _uiState.update { currentState ->
                         currentState.copy(0, 0)
                     }
-                    ServiceData.growAGarden.reset()
-                    ServiceData.timer.resetTime()
+                    NotifyData.game.reset()
+                    NotifyData.timer.resetTime()
                     break
                 }
 
@@ -54,12 +54,12 @@ class TimerViewModel: ViewModel() {
 
     fun fetchIfRunning()
     {
-        if(!ServiceState.isServiceRunning.value)
+        if(!NotifyState.isNotifyRunning.value)
             return
 
         viewModelScope.launch {
-            ServiceData.growAGarden.fetchStocks()
-            ServiceData.timer.getTime(ServiceData.growAGarden.uiState.value.updatedAt)
+            NotifyData.game.fetchStocks()
+            NotifyData.timer.getTime(NotifyData.game.uiState.value.updatedAt)
         }
     }
 }
