@@ -166,15 +166,25 @@ class MainActivity : ComponentActivity() {
         val timerViewModel: TimerViewModel by viewModels()
         val editMode = remember { mutableStateOf(false) }
         val scheduler = NotifyAlarmManager(this)
+        val preferences = NotifyDataStore(this)
+        val favorites = preferences.favorites.collectAsState(emptySet())
+        ServiceData.growAGarden.favorites.value = favorites.value
+        LaunchedEffect(Unit)
+        {
+            val isRunning = scheduler.isRunning()
+            println("IsRunning: " + isRunning)
+            ServiceState.setServiceRunning(isRunning)
+            timerViewModel.fetchIfRunning()
+        }
         Scaffold(topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 expandedAppBar(height = connection.appBarHeight, editable = editMode)
-                collapsedAppBar(height = connection.appBarHeight, editable = editMode)
+                collapsedAppBar(height = connection.appBarHeight, editable = editMode, scheduler = scheduler, preferences = preferences)
             }
         }, modifier = Modifier.fillMaxSize().nestedScroll(connection), containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
             Column(modifier = Modifier.fillMaxSize().padding(innerPadding).background(MaterialTheme.colorScheme.background).verticalScroll(rememberScrollState()))
             {
-                fetchButtons(scheduler)
+                fetchButtons(scheduler, preferences)
                 val uiState = ServiceData.growAGarden.uiState.collectAsState()
                 val timerState = timerViewModel.uiState.collectAsState()
 
@@ -221,7 +231,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun fetchButtons(scheduler: NotifyAlarmManager)
+    fun fetchButtons(scheduler: NotifyAlarmManager, preferences: NotifyDataStore)
     {
         Button(onClick = {
             if(!ServiceState.isServiceRunning.value)
@@ -319,7 +329,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun collapsedAppBar(modifier: Modifier = Modifier, height: Int, editable: MutableState<Boolean>, scheduler: NotifyAlarmManager)
+    fun collapsedAppBar(modifier: Modifier = Modifier, height: Int, editable: MutableState<Boolean>, scheduler: NotifyAlarmManager, preferences: NotifyDataStore)
     {
         var progress = (height / TOP_BAR_HEIGHT.toFloat()).coerceIn(0.0f, 1.0f)
         progress = 2.0f * (progress)
@@ -338,6 +348,7 @@ class MainActivity : ComponentActivity() {
 
                         if(!editable.value && ServiceState.isServiceRunning.value)
                         {
+                            ServiceData.growAGarden.saveFavorites(preferences)
                             scheduler.cancel()
                             val time = ServiceData.timer.getTime(ServiceData.growAGarden.uiState.value.updatedAt)
                             scheduler.schedule(time, ServiceData.growAGarden.favorites.value)

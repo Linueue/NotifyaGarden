@@ -31,13 +31,17 @@ class NotifyBroadcast: BroadcastReceiver() {
             }
         }
         CoroutineScope(Dispatchers.IO).launch {
-            ServiceData.growAGarden.fetchStocks()
-            ServiceData.growAGarden.notifyFavorites(favoriteAvailableFn, favorites)
+            val fetched = ServiceData.growAGarden.fetchStocks()
+            var time = System.currentTimeMillis() + (5 * 60 * 1000)
+            if(fetched) {
+                ServiceData.growAGarden.notifyFavorites(favoriteAvailableFn, favorites)
+                time = ServiceData.timer.getTime(ServiceData.growAGarden.uiState.value.updatedAt)
+            }
+
+            val scheduler = NotifyAlarmManager(context!!)
+            scheduler.schedule(time, favorites)
         }
 
-        val scheduler = NotifyAlarmManager(context!!)
-        val time = ServiceData.timer.getTime(ServiceData.growAGarden.uiState.value.updatedAt)
-        scheduler.schedule(time, favorites)
     }
 
     private fun buildNotification(context: Context, title: String, info: String): Notification

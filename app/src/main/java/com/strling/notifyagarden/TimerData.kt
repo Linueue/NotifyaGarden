@@ -34,6 +34,13 @@ class Timer {
         delay(next * 1000)
     }
 
+    fun resetTime()
+    {
+        _uiState.update {
+            0L
+        }
+    }
+
     fun getTime(startTime: Long): Long
     {
         val time = startTime / 1000

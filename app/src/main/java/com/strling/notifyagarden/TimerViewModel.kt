@@ -27,8 +27,14 @@ class TimerViewModel: ViewModel() {
             val startTime = ServiceData.timer.uiState.value / 1000.0
             while(true)
             {
-                if(!ServiceState.isServiceRunning.value)
+                if(!ServiceState.isServiceRunning.value) {
+                    _uiState.update { currentState ->
+                        currentState.copy(0, 0)
+                    }
+                    ServiceData.growAGarden.reset()
+                    ServiceData.timer.resetTime()
                     break
+                }
 
                 val currentTime = System.currentTimeMillis() / 1000.0
                 val diff = (60 * 5) - (currentTime - startTime)
@@ -43,6 +49,17 @@ class TimerViewModel: ViewModel() {
 
                 delay(1000)
             }
+        }
+    }
+
+    fun fetchIfRunning()
+    {
+        if(!ServiceState.isServiceRunning.value)
+            return
+
+        viewModelScope.launch {
+            ServiceData.growAGarden.fetchStocks()
+            ServiceData.timer.getTime(ServiceData.growAGarden.uiState.value.updatedAt)
         }
     }
 }

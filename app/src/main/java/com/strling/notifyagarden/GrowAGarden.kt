@@ -4,6 +4,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,29 +33,35 @@ class GrowAGarden {
     val api = GrowAGardenAPI()
     val favorites = mutableStateOf(setOf<String>())
 
-    suspend fun fetchStocks()
+    suspend fun fetchStocks(): Boolean
     {
-        _uiState.update { currentState ->
-            try {
-                var data = currentState
-                while(true) {
-                    data = api.fetchStocks()
+        var fetched = false
+        try {
+            var data = _uiState.value
+            for(i in 1..5) {
+                data = api.fetchStocks()
 
-                    if(data.updatedAt != currentState.updatedAt)
-                        break
-                    delay(5000)
+                if(data.updatedAt != _uiState.value.updatedAt) {
+                    fetched = true
+                    break
                 }
-                currentState.copy(data.updatedAt, data.seedShop, data.gearShop, data.eggShop)
-            } catch (e: Exception) {
-                println(e.toString())
-                currentState
+                delay(5000)
             }
+            _uiState.update { currentState ->
+                currentState.copy(data.updatedAt, data.seedShop, data.gearShop, data.eggShop)
+            }
+        } catch (e: Exception) {
+            println(e.toString())
         }
+
+        return fetched
     }
 
-    fun saveState()
+    fun saveFavorites(dataStore: NotifyDataStore)
     {
-
+        CoroutineScope(Dispatchers.IO).launch {
+            dataStore.setFavorites(favorites.value)
+        }
     }
 
     fun notifyFavorites(fn: (Item) -> Unit, favorites: Set<String>)
@@ -66,6 +74,13 @@ class GrowAGarden {
                 fn(uiState.value.gearShop.items[favorite]!!)
             if(uiState.value.eggShop.items.containsKey(favorite))
                 fn(uiState.value.eggShop.items[favorite]!!)
+        }
+    }
+
+    fun reset()
+    {
+        _uiState.update { currentState ->
+            currentState.copy(updatedAt = 0)
         }
     }
 
