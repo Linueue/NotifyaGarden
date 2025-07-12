@@ -311,7 +311,6 @@ class MainActivity : ComponentActivity() {
                     Text(title, fontSize = 40.sp, modifier = Modifier.graphicsLayer { alpha = progress })
                 }
             },
-            windowInsets = WindowInsets(0),
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.background,
             )

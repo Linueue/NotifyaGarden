@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import androidx.compose.ui.graphics.Color
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -47,7 +48,8 @@ class NotifyBroadcast: BroadcastReceiver() {
     private fun buildNotification(context: Context, title: String, info: String): Notification
     {
         val notification = NotificationCompat.Builder(context, "notify_a_garden")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setColor(0xE31E62)
             .setContentTitle(title)
             .setContentText(info)
             .setPriority(NotificationManager.IMPORTANCE_HIGH)
