@@ -70,6 +70,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import com.strling.notifyagarden.proto.GameItemsOuterClass
 import com.strling.notifyagarden.ui.theme.NotifyAGardenTheme
 
 class MainActivity : ComponentActivity() {
@@ -161,11 +162,14 @@ class MainActivity : ComponentActivity() {
         val preferences = NotifyDataStore(this)
         val favorites = preferences.favorites.collectAsState(emptySet())
         NotifyData.game.favorites.value = favorites.value
+        val gameItems = gameItemsDataStore.data.collectAsState(GameItemsOuterClass.GameItems.getDefaultInstance()).value
         LaunchedEffect(Unit)
         {
             val isRunning = scheduler.isRunning()
             NotifyState.setNotifyRunning(isRunning)
             timerViewModel.fetchIfRunning()
+
+            GameItemsAPI.update(gameItems.version, gameItemsDataStore)
         }
         Scaffold(topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -196,18 +200,23 @@ class MainActivity : ComponentActivity() {
                     Text(NotifyData.timer.formatTimer(timerState.value), fontSize = 20.sp)
                 }
 
-                val views = NotifyData.game.getData(uiState.value, NotifyData.game.favorites)
-                Text("Seeds", fontSize = 14.sp, modifier = Modifier.padding(15.dp, 0.dp).graphicsLayer { alpha = 0.8f })
-                views.seeds.forEach { view ->
-                    displayShopView(view, editMode, NotifyData.game.favorites)
-                }
-                Text("Gears", fontSize = 14.sp, modifier = Modifier.padding(15.dp, 0.dp).graphicsLayer { alpha = 0.8f })
-                views.gears.forEach { view ->
-                    displayShopView(view, editMode, NotifyData.game.favorites)
-                }
-                Text("Eggs", fontSize = 14.sp, modifier = Modifier.padding(15.dp, 0.dp).graphicsLayer { alpha = 0.8f })
-                views.eggs.forEach { view ->
-                    displayShopView(view, editMode, NotifyData.game.favorites)
+                val views = NotifyData.game.getData(uiState.value, NotifyData.game.favorites, gameItems)
+                val categories = listOf<String>("Seeds", "Gears", "Eggs")
+                categories.forEach { category ->
+                    Text(
+                        category,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(15.dp, 0.dp).graphicsLayer { alpha = 0.8f })
+                    val items = when(category)
+                    {
+                        "Seeds" -> views.seeds;
+                        "Gears" -> views.gears;
+                        "Eggs" -> views.eggs;
+                        else -> listOf();
+                    }
+                    items.forEach { view ->
+                        displayShopView(view, editMode, NotifyData.game.favorites)
+                    }
                 }
             }
         }

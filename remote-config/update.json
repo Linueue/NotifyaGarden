@@ -1,8 +1,8 @@
 {
-  "version": "1.13.0",
+  "version": "1.13.1",
   "seeds": [
     {
-      "name": "Carrot",
+      "name": "Test",
       "icon": "🥕",
       "color": 4294944000
     },

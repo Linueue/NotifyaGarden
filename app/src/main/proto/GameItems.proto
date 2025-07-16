@@ -12,7 +12,8 @@ message GameItem
 
 message GameItems
 {
-  repeated GameItem seeds = 1;
-  repeated GameItem gears = 2;
-  repeated GameItem eggs = 3;
+  string version = 1;
+  repeated GameItem seeds = 2;
+  repeated GameItem gears = 3;
+  repeated GameItem eggs = 4;
 }

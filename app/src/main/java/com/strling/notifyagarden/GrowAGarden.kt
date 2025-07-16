@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
+import com.strling.notifyagarden.proto.GameItemsOuterClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -84,7 +85,7 @@ class GrowAGarden {
         }
     }
 
-    fun getData(stocks: GrowAGardenData, favorites: MutableState<Set<String>>): ShopDataViews
+    fun getData(stocks: GrowAGardenData, favorites: MutableState<Set<String>>, gameItems: GameItemsOuterClass.GameItems): ShopDataViews
     {
         val views = ShopDataViews()
 
@@ -113,52 +114,18 @@ class GrowAGarden {
                 views.eggs.add(view)
         }
 
-        addSeedShopView("Carrot", 0xFFFFA500, "🥕")
-        addSeedShopView("Strawberry", 0xFFdb3d21, "🍓")
-        addSeedShopView("Blueberry", 0xFF4B0082, "🫐")
-        addSeedShopView("Orange Tulip", 0xFFFFA500, "🌷")
-        addSeedShopView("Tomato", 0xFFFF6347, "🍅")
-        addSeedShopView("Daffodil", 0xFFFFFF00, "🌼")
-        addSeedShopView("Watermelon", 0xFFFC6C85, "🍉")
-        addSeedShopView("Pumpkin", 0xFFFF7518, "🎃")
-        addSeedShopView("Apple", 0xFFFF0800, "🍎")
-        addSeedShopView("Bamboo", 0xFF7BB661, "🎋")
-        addSeedShopView("Coconut", 0xFF8B4513, "🥥")
-        addSeedShopView("Cactus", 0xFF228B22, "🌵")
-        addSeedShopView("Dragon Fruit", 0xFFFF2E93, "🥝")
-        addSeedShopView("Mango", 0xFFFFC324, "🥭")
-        addSeedShopView("Grape", 0xFF6F2DA8, "🍇")
-        addSeedShopView("Mushroom", 0xFFFFDAB9, "🍄")
-        addSeedShopView("Pepper", 0xFFFF0000, "🌶️")
-        addSeedShopView("Beanstalk", 0xFF3CB371, "🌿")
-        addSeedShopView("Ember Lily", 0xFFFF4500, "🌺")
-        addSeedShopView("Sugar Apple", 0xFF7FFFD4, "🍏")
-        addSeedShopView("Burning Bud", 0xFFB22222, "☀️")
-
-        addGearShopView("Watering Can", 0xFFB0C4DE, "🪣")
-        addGearShopView("Trowel", 0xFF8B4513, "🧑‍🌾")
-        addGearShopView("Recall Wrench", 0xFF708090, "🔧")
-        addGearShopView("Basic Sprinkler", 0xFFADD8E6, "💧")
-        addGearShopView("Advanced Sprinkler", 0xFF00BFFF, "💦")
-        addGearShopView("Godly Sprinkler", 0xFF1E90FF, "🌧️")
-        addGearShopView("Magnifying Glass", 0xFFDAA520, "🔍")
-        addGearShopView("Tanning Mirror", 0xFFFFF5EE, "🪞")
-        addGearShopView("Master Sprinkler", 0xFF4682B4, "🌊")
-        addGearShopView("Cleaning Spray", 0xFFFFE4C4, "🧴")
-        addGearShopView("Favorite Tool", 0xFFDAA520, "🛠️")
-        addGearShopView("Harvest Tool", 0xFFDEB887, "🌾")
-        addGearShopView("Friendship Pot", 0xFF9ACD32, "🪴")
-
-        addEggShopView("Common Egg", 0xFFF0EAD6, "🥚")
-        addEggShopView("Common Summer Egg", 0xFFF0EAD6, "🥚")
-        addEggShopView("Uncommon Egg", 0xFFFFFF00, "🟡")
-        addEggShopView("Rare Egg", 0xFF1E90FF, "🔵")
-        addEggShopView("Rare Summer Egg", 0xFF1E90FF, "🔵")
-        addEggShopView("Legendary Egg", 0xFF8A2BE2, "🟣")
-        addEggShopView("Mythical Egg", 0xFFFFD700, "🌟")
-        addEggShopView("Paradise Egg", 0xFFFFD700, "🌟")
-        addEggShopView("Bug Egg", 0xFF556B2F, "🐛")
-        addEggShopView("Bee Egg", 0xFFFFC107, "🐝")
+        for(item in gameItems.seedsList)
+        {
+            addSeedShopView(item.name, item.color, item.icon)
+        }
+        for(item in gameItems.gearsList)
+        {
+            addGearShopView(item.name, item.color, item.icon)
+        }
+        for(item in gameItems.eggsList)
+        {
+            addEggShopView(item.name, item.color, item.icon)
+        }
 
         return views
     }
