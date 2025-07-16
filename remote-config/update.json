@@ -1,0 +1,228 @@
+{
+  "seeds": [
+    {
+      "name": "Carrot",
+      "icon": "🥕",
+      "color": 4294944000
+    },
+    {
+      "name": "Strawberry",
+      "icon": "🍓",
+      "color": 4292558113
+    },
+    {
+      "name": "Blueberry",
+      "icon": "🫐",
+      "color": 4283105410
+    },
+    {
+      "name": "Orange Tulip",
+      "icon": "🌷",
+      "color": 4294944000
+    },
+    {
+      "name": "Tomato",
+      "icon": "🍅",
+      "color": 4294927175
+    },
+    {
+      "name": "Daffodil",
+      "icon": "🌼",
+      "color": 4294967040
+    },
+    {
+      "name": "Watermelon",
+      "icon": "🍉",
+      "color": 4294732933
+    },
+    {
+      "name": "Pumpkin",
+      "icon": "🎃",
+      "color": 4294931736
+    },
+    {
+      "name": "Apple",
+      "icon": "🍎",
+      "color": 4294903808
+    },
+    {
+      "name": "Bamboo",
+      "icon": "🎋",
+      "color": 4286297697
+    },
+    {
+      "name": "Coconut",
+      "icon": "🥥",
+      "color": 4287317267
+    },
+    {
+      "name": "Cactus",
+      "icon": "🌵",
+      "color": 4280453922
+    },
+    {
+      "name": "Dragon Fruit",
+      "icon": "🥝",
+      "color": 4294913683
+    },
+    {
+      "name": "Mango",
+      "icon": "🥭",
+      "color": 4294951716
+    },
+    {
+      "name": "Grape",
+      "icon": "🍇",
+      "color": 4285476264
+    },
+    {
+      "name": "Mushroom",
+      "icon": "🍄",
+      "color": 4294957753
+    },
+    {
+      "name": "Pepper",
+      "icon": "🌶️",
+      "color": 4294901760
+    },
+    {
+      "name": "Beanstalk",
+      "icon": "🌿",
+      "color": 4282168177
+    },
+    {
+      "name": "Ember Lily",
+      "icon": "🌺",
+      "color": 4294919424
+    },
+    {
+      "name": "Sugar Apple",
+      "icon": "🍏",
+      "color": 4286578644
+    },
+    {
+      "name": "Burning Bud",
+      "icon": "☀️",
+      "color": 4289864226
+    }
+  ],
+  "gears": [
+    {
+      "name": "Watering Can",
+      "icon": "🪣",
+      "color": 4289774814
+    },
+    {
+      "name": "Trowel",
+      "icon": "🧑‍🌾",
+      "color": 4287317267
+    },
+    {
+      "name": "Recall Wrench",
+      "icon": "🔧",
+      "color": 4285563024
+    },
+    {
+      "name": "Basic Sprinkler",
+      "icon": "💧",
+      "color": 4289583334
+    },
+    {
+      "name": "Advanced Sprinkler",
+      "icon": "💦",
+      "color": 4278239231
+    },
+    {
+      "name": "Godly Sprinkler",
+      "icon": "🌧️",
+      "color": 4280193279
+    },
+    {
+      "name": "Magnifying Glass",
+      "icon": "🔍",
+      "color": 4292519200
+    },
+    {
+      "name": "Tanning Mirror",
+      "icon": "🪞",
+      "color": 4294964718
+    },
+    {
+      "name": "Master Sprinkler",
+      "icon": "🌊",
+      "color": 4282811060
+    },
+    {
+      "name": "Cleaning Spray",
+      "icon": "🧴",
+      "color": 4294960324
+    },
+    {
+      "name": "Favorite Tool",
+      "icon": "🛠️",
+      "color": 4292519200
+    },
+    {
+      "name": "Harvest Tool",
+      "icon": "🌾",
+      "color": 4292786311
+    },
+    {
+      "name": "Friendship Pot",
+      "icon": "🪴",
+      "color": 4288335154
+    }
+  ],
+  "eggs": [
+    {
+      "name": "Common Egg",
+      "icon": "🥚",
+      "color": 4293978838
+    },
+    {
+      "name": "Common Summer Egg",
+      "icon": "🥚",
+      "color": 4293978838
+    },
+    {
+      "name": "Uncommon Egg",
+      "icon": "🟡",
+      "color": 4294967040
+    },
+    {
+      "name": "Rare Egg",
+      "icon": "🔵",
+      "color": 4280193279
+    },
+    {
+      "name": "Rare Summer Egg",
+      "icon": "🔵",
+      "color": 4280193279
+    },
+    {
+      "name": "Legendary Egg",
+      "icon": "🟣",
+      "color": 4287245282
+    },
+    {
+      "name": "Mythical Egg",
+      "icon": "🌟",
+      "color": 4294956800
+    },
+    {
+      "name": "Paradise Egg",
+      "icon": "🌟",
+      "color": 4294956800
+    },
+    {
+      "name": "Bug Egg",
+      "icon": "🐛",
+      "color": 4283788079
+    },
+    {
+      "name": "Bee Egg",
+      "icon": "🐝",
+      "color": 4294951175
+    }
+  ]
+}

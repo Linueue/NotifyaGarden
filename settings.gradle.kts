@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Notify a Garden"
 include(":app")
- 

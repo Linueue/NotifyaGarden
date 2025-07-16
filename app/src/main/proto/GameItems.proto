@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option java_package = "com.strling.notifyagarden.proto";
+option java_multiple_files = false;
+
+message GameItem
+{
+  string name = 1;
+  string icon = 2;
+  int64 color = 3;
+}
+
+message GameItems
+{
+  repeated GameItem seeds = 1;
+  repeated GameItem gears = 2;
+  repeated GameItem eggs = 3;
+}
