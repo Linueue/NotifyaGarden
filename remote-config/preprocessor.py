@@ -8,16 +8,17 @@ class Categories(Enum):
 
 class Item:
     def __init__(self, name: str, icon: str, color: int):
-        self.name = name
-        self.icon = icon
-        self.color = color
+        self.name: str = name
+        self.icon: str = icon
+        self.color: int = color
 
     def to_json(self):
         return {"name": self.name, "icon": self.icon, "color": self.color}
 
 class Items:
-    def __init__(self):
-        self.data = {}
+    def __init__(self, version: str):
+        self.version: str = version
+        self.data: dict[Categories, list[Item]] = {}
 
         for category in list(Categories):
             self.data[category] = []
@@ -27,6 +28,7 @@ class Items:
     
     def serialize(self, filename: str):
         values = {}
+        values["version"] = self.version
         for category, data in self.data.items():
             values[category.name.lower()] = [d.to_json() for d in data]
 
@@ -34,7 +36,7 @@ class Items:
             f.write(json.dumps(values, ensure_ascii=False, indent=2))
 
 def main():
-    items = Items()
+    items = Items("1.13.0")
 
     items.add(Categories.SEEDS, Item("Carrot", "🥕", 0xFFFFA500))
     items.add(Categories.SEEDS, Item("Strawberry", "🍓", 0xFFDB3D21))
