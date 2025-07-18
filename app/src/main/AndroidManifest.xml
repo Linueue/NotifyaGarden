@@ -28,7 +28,6 @@
             </intent-filter>
         </activity>
         <receiver android:name=".NotifyBroadcast" />
-        <service android:name=".NotificationService" android:foregroundServiceType="dataSync" />
     </application>
 
 </manifest>

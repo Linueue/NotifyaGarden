@@ -1,5 +1,6 @@
 package com.strling.notifyagarden
 
+import android.content.Context
 import androidx.datastore.core.DataStore
 import com.strling.notifyagarden.proto.GameItemsOuterClass
 import com.strling.notifyagarden.proto.copy
@@ -9,6 +10,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okio.IOException
 
 @Serializable
 data class ItemValue(
@@ -35,20 +37,25 @@ object GameItemsAPI
         val request = Request.Builder().url(URL).build()
         return withContext(Dispatchers.IO)
         {
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    Result.failure(RuntimeException("Could not fetch URL"))
-                } else {
-                    val content = response.body!!.string()
-                    val json = Json { ignoreUnknownKeys = true }
-                    val itemsList = json.decodeFromString<ItemsList>(content)
-                    Result.success(itemsList)
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        Result.failure(RuntimeException("Could not fetch URL"))
+                    } else {
+                        val content = response.body!!.string()
+                        val json = Json { ignoreUnknownKeys = true }
+                        val itemsList = json.decodeFromString<ItemsList>(content)
+                        Result.success(itemsList)
+                    }
                 }
+            } catch(e: IOException)
+            {
+                Result.failure(IOException("Could not fetch URL"))
             }
         }
     }
 
-    suspend fun update(version: String, dataStore: DataStore<GameItemsOuterClass.GameItems>)
+    suspend fun update(version: String, context: Context)
     {
         val itemsList = fetch()
 
@@ -60,8 +67,8 @@ object GameItemsAPI
         if(gamesItemsList.version == version)
             return
 
-        dataStore.updateData {
-            val builder = GameItemsOuterClass.GameItems.newBuilder()
+        context.gameItemsDataStore.updateData { currentState ->
+            val builder = currentState.toBuilder()
 
             builder.setVersion(gamesItemsList.version)
             for(seed in gamesItemsList.seeds)

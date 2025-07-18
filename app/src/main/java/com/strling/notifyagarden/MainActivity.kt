@@ -72,6 +72,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import com.strling.notifyagarden.proto.GameItemsOuterClass
 import com.strling.notifyagarden.ui.theme.NotifyAGardenTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 class MainActivity : ComponentActivity() {
     val TOP_BAR_HEIGHT: Int = 280
@@ -162,14 +164,17 @@ class MainActivity : ComponentActivity() {
         val preferences = NotifyDataStore(this)
         val favorites = preferences.favorites.collectAsState(emptySet())
         NotifyData.game.favorites.value = favorites.value
-        val gameItems = gameItemsDataStore.data.collectAsState(GameItemsOuterClass.GameItems.getDefaultInstance()).value
+        val gameItemsFlow: Flow<GameItemsOuterClass.GameItems> = gameItemsDataStore.data
+        val gameItems = gameItemsFlow.collectAsState(GameItemsOuterClass.GameItems.getDefaultInstance()).value
+        val context = this
         LaunchedEffect(Unit)
         {
+            val gameItemsFirst = context.gameItemsDataStore.data.first()
             val isRunning = scheduler.isRunning()
             NotifyState.setNotifyRunning(isRunning)
             timerViewModel.fetchIfRunning()
 
-            GameItemsAPI.update(gameItems.version, gameItemsDataStore)
+            GameItemsAPI.update(gameItemsFirst.version, context)
         }
         Scaffold(topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
