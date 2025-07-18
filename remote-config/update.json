@@ -1,8 +1,8 @@
 {
-  "version": "1.13.1",
+  "version": "1.14.0",
   "seeds": [
     {
-      "name": "Test",
+      "name": "Carrot",
       "icon": "🥕",
       "color": 4294944000
     },
@@ -105,6 +105,11 @@
       "name": "Burning Bud",
       "icon": "☀️",
       "color": 4289864226
+    },
+    {
+      "name": "Giant Pinecone",
+      "icon": "🌲",
+      "color": 4287317267
     }
   ],
   "gears": [
@@ -132,6 +137,16 @@
       "name": "Advanced Sprinkler",
       "icon": "💦",
       "color": 4278239231
+    },
+    {
+      "name": "Medium Toy",
+      "icon": "🧸",
+      "color": 4294944000
+    },
+    {
+      "name": "Medium Treat",
+      "icon": "🍬",
+      "color": 4294928820
     },
     {
       "name": "Godly Sprinkler",
@@ -172,6 +187,11 @@
       "name": "Friendship Pot",
       "icon": "🪴",
       "color": 4288335154
+    },
+    {
+      "name": "Levelup Lollipop",
+      "icon": "🍭",
+      "color": 4285160141
     }
   ],
   "eggs": [

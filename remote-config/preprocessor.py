@@ -36,7 +36,7 @@ class Items:
             f.write(json.dumps(values, ensure_ascii=False, indent=2))
 
 def main():
-    items = Items("1.13.0")
+    items = Items("1.14.0")
 
     items.add(Categories.SEEDS, Item("Carrot", "🥕", 0xFFFFA500))
     items.add(Categories.SEEDS, Item("Strawberry", "🍓", 0xFFDB3D21))
@@ -59,12 +59,15 @@ def main():
     items.add(Categories.SEEDS, Item("Ember Lily", "🌺", 0xFFFF4500))
     items.add(Categories.SEEDS, Item("Sugar Apple", "🍏", 0xFF7FFFD4))
     items.add(Categories.SEEDS, Item("Burning Bud", "☀️", 0xFFB22222))
+    items.add(Categories.SEEDS, Item("Giant Pinecone", "🌲", 0xFF8B4513))
 
     items.add(Categories.GEARS, Item("Watering Can", "🪣", 0xFFB0C4DE))
     items.add(Categories.GEARS, Item("Trowel", "🧑‍🌾", 0xFF8B4513))
     items.add(Categories.GEARS, Item("Recall Wrench", "🔧", 0xFF708090))
     items.add(Categories.GEARS, Item("Basic Sprinkler", "💧", 0xFFADD8E6))
     items.add(Categories.GEARS, Item("Advanced Sprinkler", "💦", 0xFF00BFFF))
+    items.add(Categories.GEARS, Item("Medium Toy", "🧸", 0xFFFFA500))
+    items.add(Categories.GEARS, Item("Medium Treat", "🍬", 0xFFFF69B4))
     items.add(Categories.GEARS, Item("Godly Sprinkler", "🌧️", 0xFF1E90FF))
     items.add(Categories.GEARS, Item("Magnifying Glass", "🔍", 0xFFDAA520))
     items.add(Categories.GEARS, Item("Tanning Mirror", "🪞", 0xFFFFF5EE))
@@ -73,6 +76,7 @@ def main():
     items.add(Categories.GEARS, Item("Favorite Tool", "🛠️", 0xFFDAA520))
     items.add(Categories.GEARS, Item("Harvest Tool", "🌾", 0xFFDEB887))
     items.add(Categories.GEARS, Item("Friendship Pot", "🪴", 0xFF9ACD32))
+    items.add(Categories.GEARS, Item("Levelup Lollipop", "🍭", 0xFF6A5ACD))
 
     items.add(Categories.EGGS, Item("Common Egg", "🥚", 0xFFF0EAD6))
     items.add(Categories.EGGS, Item("Common Summer Egg", "🥚", 0xFFF0EAD6))
