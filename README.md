@@ -16,7 +16,7 @@ This app uses Vulcan API, thus, there will be approximately 15-30 seconds delay 
 - Notification when a favorite is available
 
 ## To Do
-- [ ] Remote Updates
+- [x] Remote Updates
 - [ ] Refactor
 - [ ] Weather
 - [ ] Travelling Merchant
