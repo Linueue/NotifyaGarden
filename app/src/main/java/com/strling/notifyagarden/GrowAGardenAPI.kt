@@ -44,21 +44,26 @@ class GrowAGardenAPI {
     val BASE_API_URL = "https://growagarden.gg"
     val client = OkHttpClient()
 
-    suspend fun requestStocks(): StocksResponse
+    suspend fun requestStocks(): Result<StocksResponse>
     {
         val STOCKS_API_URL = BASE_API_URL + "/api/stock"
         val request = Request.Builder().url(STOCKS_API_URL).build()
 
         return withContext(Dispatchers.IO)
         {
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful)
-                    throw IOException("Could not fetch server")
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful)
+                        return@withContext Result.failure(IOException("Could not fetch server"))
 
-                val content = response.body!!.string()
-                val json = Json { ignoreUnknownKeys = true }
-                val stocksResponse = json.decodeFromString<StocksResponse>(content)
-                stocksResponse
+                    val content = response.body!!.string()
+                    val json = Json { ignoreUnknownKeys = true }
+                    val stocksResponse = json.decodeFromString<StocksResponse>(content)
+                    Result.success(stocksResponse)
+                }
+            } catch(e: IOException)
+            {
+                Result.failure(IOException("Could not fetch URL"))
             }
         }
     }
@@ -73,11 +78,15 @@ class GrowAGardenAPI {
         return item
     }
 
-    suspend fun fetchStocks(): GrowAGardenData
+    suspend fun fetchStocks(): Result<GrowAGardenData>
     {
         val data = GrowAGardenData()
-        val response: StocksResponse = requestStocks()
+        val responseAPI: Result<StocksResponse> = requestStocks()
 
+        if(!responseAPI.isSuccess)
+            return Result.failure(RuntimeException("Could not fetch URL"))
+
+        val response = responseAPI.getOrNull()!!
         data.updatedAt = response.lastApiFetch
 
         for(seed in response.seedsStock)
@@ -98,6 +107,6 @@ class GrowAGardenAPI {
             data.eggShop.items[item.name] = item
         }
 
-        return data
+        return Result.success(data)
     }
 }

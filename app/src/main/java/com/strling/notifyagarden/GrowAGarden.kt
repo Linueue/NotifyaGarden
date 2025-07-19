@@ -40,8 +40,10 @@ class GrowAGarden {
         try {
             var data = _uiState.value
             for(i in 1..5) {
-                data = api.fetchStocks()
+                val retrieved = api.fetchStocks()
 
+                if(!retrieved.isSuccess)
+                    break
                 if(data.updatedAt != _uiState.value.updatedAt) {
                     fetched = true
                     break

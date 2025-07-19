@@ -29,7 +29,7 @@ data class ItemsList(
 
 object GameItemsAPI
 {
-    val URL = "https://raw.githubusercontent.com/Linueue/NotifyaGarden/refs/heads/master/remote-config/update.json"
+    const val URL = "https://raw.githubusercontent.com/Linueue/NotifyaGarden/refs/heads/master/remote-config/update.json"
     val client = OkHttpClient()
 
     suspend fun fetch(): Result<ItemsList>
@@ -71,6 +71,9 @@ object GameItemsAPI
             val builder = currentState.toBuilder()
 
             builder.setVersion(gamesItemsList.version)
+            builder.clearSeeds()
+            builder.clearGears()
+            builder.clearEggs()
             for(seed in gamesItemsList.seeds)
             {
                 builder.addSeeds(GameItemsOuterClass.GameItem.newBuilder()

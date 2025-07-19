@@ -169,11 +169,11 @@ class MainActivity : ComponentActivity() {
         val context = this
         LaunchedEffect(Unit)
         {
-            val gameItemsFirst = context.gameItemsDataStore.data.first()
             val isRunning = scheduler.isRunning()
             NotifyState.setNotifyRunning(isRunning)
             timerViewModel.fetchIfRunning()
 
+            val gameItemsFirst = context.gameItemsDataStore.data.first()
             GameItemsAPI.update(gameItemsFirst.version, context)
         }
         Scaffold(topBar = {
