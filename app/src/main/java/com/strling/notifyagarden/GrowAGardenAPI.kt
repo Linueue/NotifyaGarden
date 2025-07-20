@@ -20,6 +20,7 @@ data class StocksResponse (
     val gearStock: List<ItemResponse>,
     val eggStock: List<ItemResponse>,
     val seedsStock: List<ItemResponse>,
+    val eventStock: List<ItemResponse>,
     val lastApiFetch: Long,
 )
 
@@ -37,6 +38,7 @@ data class GrowAGardenData (
     val seedShop: ItemShop = ItemShop(),
     val gearShop: ItemShop = ItemShop(),
     val eggShop: ItemShop = ItemShop(),
+    val eventShop: ItemShop = ItemShop(),
 )
 
 class GrowAGardenAPI {
@@ -105,6 +107,12 @@ class GrowAGardenAPI {
         {
             val item: Item = parse(egg)
             data.eggShop.items[item.name] = item
+        }
+
+        for(event in response.eventStock)
+        {
+            val item: Item = parse(event)
+            data.eventShop.items[item.name] = item
         }
 
         return Result.success(data)

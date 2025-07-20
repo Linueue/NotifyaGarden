@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -106,9 +107,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    class ExpandableAppBarConnection(maxTopBarHeight: Int) : NestedScrollConnection
+    class ExpandableAppBarConnection(val maxTopBarHeight: Int) : NestedScrollConnection
     {
-        val maxTopBarHeight: Int = maxTopBarHeight
         var appBarHeight: Int by mutableIntStateOf(maxTopBarHeight)
             private set
 
@@ -167,6 +167,7 @@ class MainActivity : ComponentActivity() {
         val gameItemsFlow: Flow<GameItemsOuterClass.GameItems> = gameItemsDataStore.data
         val gameItems = gameItemsFlow.collectAsState(GameItemsOuterClass.GameItems.getDefaultInstance()).value
         val context = this
+        val scrollState = rememberScrollState()
         LaunchedEffect(Unit)
         {
             val isRunning = scheduler.isRunning()
@@ -177,12 +178,12 @@ class MainActivity : ComponentActivity() {
             GameItemsAPI.update(gameItemsFirst.version, context)
         }
         Scaffold(topBar = {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth().verticalScroll(scrollState).nestedScroll(connection)) {
                 expandedAppBar(height = connection.appBarHeight, editable = editMode)
                 collapsedAppBar(height = connection.appBarHeight, editable = editMode, scheduler = scheduler, preferences = preferences)
             }
         }, modifier = Modifier.fillMaxSize().nestedScroll(connection), containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
-            Column(modifier = Modifier.fillMaxSize().padding(innerPadding).background(MaterialTheme.colorScheme.background).verticalScroll(rememberScrollState()))
+            Column(modifier = Modifier.fillMaxSize().padding(innerPadding).background(MaterialTheme.colorScheme.background).verticalScroll(scrollState))
             {
                 fetchButtons(scheduler, preferences)
                 val uiState = NotifyData.game.uiState.collectAsState()
@@ -208,10 +209,6 @@ class MainActivity : ComponentActivity() {
                 val views = NotifyData.game.getData(uiState.value, NotifyData.game.favorites, gameItems)
                 val categories = listOf<String>("Seeds", "Gears", "Eggs")
                 categories.forEach { category ->
-                    Text(
-                        category,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(15.dp, 0.dp).graphicsLayer { alpha = 0.8f })
                     val items = when(category)
                     {
                         "Seeds" -> views.seeds;
@@ -219,6 +216,14 @@ class MainActivity : ComponentActivity() {
                         "Eggs" -> views.eggs;
                         else -> listOf();
                     }
+
+                    if(items.isEmpty())
+                        return@forEach
+
+                    Text(
+                        category,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(15.dp, 0.dp).graphicsLayer { alpha = 0.8f })
                     items.forEach { view ->
                         displayShopView(view, editMode, NotifyData.game.favorites)
                     }

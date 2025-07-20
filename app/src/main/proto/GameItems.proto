@@ -16,4 +16,5 @@ message GameItems
   repeated GameItem seeds = 2;
   repeated GameItem gears = 3;
   repeated GameItem eggs = 4;
+  repeated GameItem events = 5;
 }

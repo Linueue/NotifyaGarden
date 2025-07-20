@@ -25,6 +25,7 @@ data class ItemsList(
     val seeds: List<ItemValue>,
     val gears: List<ItemValue>,
     val eggs : List<ItemValue>,
+    val events: List<ItemValue>,
 )
 
 object GameItemsAPI
@@ -74,26 +75,26 @@ object GameItemsAPI
             builder.clearSeeds()
             builder.clearGears()
             builder.clearEggs()
-            for(seed in gamesItemsList.seeds)
-            {
-                builder.addSeeds(GameItemsOuterClass.GameItem.newBuilder()
-                    .setName(seed.name)
-                    .setIcon(seed.icon)
-                    .setColor(seed.color))
-            }
-            for(gear in gamesItemsList.gears)
-            {
-                builder.addGears(GameItemsOuterClass.GameItem.newBuilder()
-                    .setName(gear.name)
-                    .setIcon(gear.icon)
-                    .setColor(gear.color))
-            }
-            for(egg in gamesItemsList.eggs)
-            {
-                builder.addEggs(GameItemsOuterClass.GameItem.newBuilder()
-                    .setName(egg.name)
-                    .setIcon(egg.icon)
-                    .setColor(egg.color))
+            builder.clearEvents()
+            val itemsList = listOf(
+                Pair(Categories.SEEDS, gamesItemsList.seeds),
+                Pair(Categories.GEARS, gamesItemsList.gears),
+                Pair(Categories.EGGS,  gamesItemsList.eggs),
+                Pair(Categories.EVENTS, gamesItemsList.events)
+            )
+            for((category, categoryList) in itemsList) {
+                for (item in categoryList) {
+                    val gameItemBuilder = GameItemsOuterClass.GameItem.newBuilder()
+                            .setName(item.name)
+                            .setIcon(item.icon)
+                            .setColor(item.color)
+                    when(category) {
+                        Categories.SEEDS -> builder.addSeeds(gameItemBuilder)
+                        Categories.GEARS -> builder.addGears(gameItemBuilder)
+                        Categories.EGGS -> builder.addEggs(gameItemBuilder)
+                        Categories.EVENTS -> builder.addEvents(gameItemBuilder)
+                    }
+                }
             }
 
             builder.build()

@@ -14,6 +14,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+enum class Categories {
+    SEEDS, GEARS, EGGS, EVENTS,
+}
+
 data class ShopDataView (
     val name: String = "",
     val stock: Int = 0,
@@ -22,9 +26,10 @@ data class ShopDataView (
 )
 
 data class ShopDataViews (
-    val seeds: MutableList<ShopDataView> = mutableListOf<ShopDataView>(),
-    val gears: MutableList<ShopDataView> = mutableListOf<ShopDataView>(),
-    val eggs: MutableList<ShopDataView> = mutableListOf<ShopDataView>(),
+    val seeds: MutableList<ShopDataView>  = mutableListOf<ShopDataView>(),
+    val gears: MutableList<ShopDataView>  = mutableListOf<ShopDataView>(),
+    val eggs: MutableList<ShopDataView>   = mutableListOf<ShopDataView>(),
+    val events: MutableList<ShopDataView> = mutableListOf<ShopDataView>(),
 )
 
 class GrowAGarden {
@@ -91,43 +96,33 @@ class GrowAGarden {
     {
         val views = ShopDataViews()
 
-        val addSeedShopView: (String, Long, String) -> Unit = { name, color, icon ->
-            val item = stocks.seedShop.items.getOrDefault(name, Item())
+        val addShopView: (Categories, String, Long, String) -> Unit = { category, name, color, icon ->
+            val (shop, views) = when(category) {
+                Categories.SEEDS  -> Pair(stocks.seedShop, views.seeds)
+                Categories.GEARS  -> Pair(stocks.gearShop, views.gears)
+                Categories.EGGS   -> Pair(stocks.eggShop, views.eggs)
+                Categories.EVENTS -> Pair(stocks.eventShop, views.events)
+            }
+
+            val item = shop.items.getOrDefault(name, Item())
             val view = ShopDataView(name, item.stock, Color(color), icon)
             if(item.stock != 0 && favorites.value.contains(name))
-                views.seeds.add(0, view)
+                views.add(0, view)
             else
-                views.seeds.add(view)
-        }
-        val addGearShopView: (String, Long, String) -> Unit = { name, color, icon ->
-            val item = stocks.gearShop.items.getOrDefault(name, Item())
-            val view = ShopDataView(name, item.stock, Color(color), icon)
-            if(item.stock != 0 && favorites.value.contains(name))
-                views.gears.add(0, view)
-            else
-                views.gears.add(view)
-        }
-        val addEggShopView: (String, Long, String) -> Unit = { name, color, icon ->
-            val item = stocks.eggShop.items.getOrDefault(name, Item())
-            val view = ShopDataView(name, item.stock, Color(color), icon)
-            if(item.stock != 0 && favorites.value.contains(name))
-                views.eggs.add(0, view)
-            else
-                views.eggs.add(view)
+                views.add(view)
         }
 
         for(item in gameItems.seedsList)
-        {
-            addSeedShopView(item.name, item.color, item.icon)
-        }
+            addShopView(Categories.SEEDS, item.name, item.color, item.icon)
+
         for(item in gameItems.gearsList)
-        {
-            addGearShopView(item.name, item.color, item.icon)
-        }
+            addShopView(Categories.GEARS, item.name, item.color, item.icon)
+
         for(item in gameItems.eggsList)
-        {
-            addEggShopView(item.name, item.color, item.icon)
-        }
+            addShopView(Categories.EGGS, item.name, item.color, item.icon)
+
+        for(item in gameItems.eventsList)
+            addShopView(Categories.EVENTS, item.name, item.color, item.icon)
 
         return views
     }
