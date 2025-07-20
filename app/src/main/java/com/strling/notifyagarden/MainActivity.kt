@@ -178,7 +178,7 @@ class MainActivity : ComponentActivity() {
             GameItemsAPI.update(gameItemsFirst.version, context)
         }
         Scaffold(topBar = {
-            Column(modifier = Modifier.fillMaxWidth().verticalScroll(scrollState).nestedScroll(connection)) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 expandedAppBar(height = connection.appBarHeight, editable = editMode)
                 collapsedAppBar(height = connection.appBarHeight, editable = editMode, scheduler = scheduler, preferences = preferences)
             }

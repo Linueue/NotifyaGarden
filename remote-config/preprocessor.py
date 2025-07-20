@@ -30,6 +30,7 @@ class Items:
     def serialize(self, filename: str):
         values = {}
         values["version"] = self.version
+
         for category, data in self.data.items():
             values[category.name.lower()] = [d.to_json() for d in data]
 
@@ -37,7 +38,7 @@ class Items:
             f.write(json.dumps(values, ensure_ascii=False, indent=2))
 
 def main():
-    items = Items("1.15.0")
+    items = Items("1.15.1")
 
     items.add(Categories.SEEDS, Item("Carrot", "🥕", 0xFFFFA500))
     items.add(Categories.SEEDS, Item("Strawberry", "🍓", 0xFFDB3D21))
@@ -90,18 +91,18 @@ def main():
     items.add(Categories.EGGS, Item("Bug Egg", "🐛", 0xFF556B2F))
     items.add(Categories.EGGS, Item("Bee Egg", "🐝", 0xFFFFC107))
 
-    items.add(Categories.EVENTS, Item("Zen Seed Pack", "🌱", 0xFFB74D))
-    items.add(Categories.EVENTS, Item("Zen Egg", "🥚", 0xFFF8E1))
-    items.add(Categories.EVENTS, Item("Hot Spring", "♨️", 0xFF7043))
-    items.add(Categories.EVENTS, Item("Zen Sand", "🏖️", 0xF4E2D8))
-    items.add(Categories.EVENTS, Item("Tranquil Radar", "📡", 0x90CAF9))
-    items.add(Categories.EVENTS, Item("Zenflare", "✨", 0xFFD54F))
-    items.add(Categories.EVENTS, Item("Zen Crate", "📦", 0xA1887F))
-    items.add(Categories.EVENTS, Item("Soft Sunshine", "🌞", 0xFFF176))
-    items.add(Categories.EVENTS, Item("Koi", "🐟", 0xFF8A65))
-    items.add(Categories.EVENTS, Item("Zen Gnome Crate", "🧙", 0xD7CCC8))
-    items.add(Categories.EVENTS, Item("Spiked Mango", "🥭", 0xFBC02D))
-    items.add(Categories.EVENTS, Item("Pet Shard Tranquil", "🔹", 0x81D4FA))
+    items.add(Categories.EVENTS, Item("Zen Seed Pack", "🌱", 0xFFFFB74D))
+    items.add(Categories.EVENTS, Item("Zen Egg", "🥚", 0xFFFFF8E1))
+    items.add(Categories.EVENTS, Item("Hot Spring", "♨️", 0xFFFF7043))
+    items.add(Categories.EVENTS, Item("Zen Sand", "🏖️", 0xFFF4E2D8))
+    items.add(Categories.EVENTS, Item("Tranquil Radar", "📡", 0xFF90CAF9))
+    items.add(Categories.EVENTS, Item("Zenflare", "✨", 0xFFFFD54F))
+    items.add(Categories.EVENTS, Item("Zen Crate", "📦", 0xFFA1887F))
+    items.add(Categories.EVENTS, Item("Soft Sunshine", "🌞", 0xFFFFF176))
+    items.add(Categories.EVENTS, Item("Koi", "🐟", 0xFFFF8A65))
+    items.add(Categories.EVENTS, Item("Zen Gnome Crate", "🧙", 0xFFD7CCC8))
+    items.add(Categories.EVENTS, Item("Spiked Mango", "🥭", 0xFFFBC02D))
+    items.add(Categories.EVENTS, Item("Pet Shard Tranquil", "🔹", 0xFF81D4FA))
 
     items.serialize("update.json")
 

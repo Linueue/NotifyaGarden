@@ -49,6 +49,7 @@ class GrowAGarden {
 
                 if(!retrieved.isSuccess)
                     break
+                data = retrieved.getOrNull()!!
                 if(data.updatedAt != _uiState.value.updatedAt) {
                     fetched = true
                     break
@@ -82,6 +83,8 @@ class GrowAGarden {
                 fn(uiState.value.gearShop.items[favorite]!!)
             if(uiState.value.eggShop.items.containsKey(favorite))
                 fn(uiState.value.eggShop.items[favorite]!!)
+            if(uiState.value.eventShop.items.containsKey(favorite))
+                fn(uiState.value.eventShop.items[favorite]!!)
         }
     }
 
