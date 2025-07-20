@@ -207,13 +207,14 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val views = NotifyData.game.getData(uiState.value, NotifyData.game.favorites, gameItems)
-                val categories = listOf<String>("Seeds", "Gears", "Eggs")
+                val categories = listOf<String>("Seeds", "Gears", "Eggs", "Event Stock")
                 categories.forEach { category ->
                     val items = when(category)
                     {
                         "Seeds" -> views.seeds;
                         "Gears" -> views.gears;
                         "Eggs" -> views.eggs;
+                        "Event Stock" -> views.events;
                         else -> listOf();
                     }
 
