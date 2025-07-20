@@ -1,5 +1,5 @@
 {
-  "version": "1.15.0",
+  "version": "1.15.1",
   "seeds": [
     {
       "name": "Carrot",
@@ -250,62 +250,62 @@
     {
       "name": "Zen Seed Pack",
       "icon": "🌱",
-      "color": 16758605
+      "color": 4294948685
     },
     {
       "name": "Zen Egg",
       "icon": "🥚",
-      "color": 16775393
+      "color": 4294965473
     },
     {
       "name": "Hot Spring",
       "icon": "♨️",
-      "color": 16740419
+      "color": 4294930499
     },
     {
       "name": "Zen Sand",
       "icon": "🏖️",
-      "color": 16048856
+      "color": 4294238936
     },
     {
       "name": "Tranquil Radar",
       "icon": "📡",
-      "color": 9489145
+      "color": 4287679225
     },
     {
       "name": "Zenflare",
       "icon": "✨",
-      "color": 16766287
+      "color": 4294956367
     },
     {
       "name": "Zen Crate",
       "icon": "📦",
-      "color": 10586239
+      "color": 4288776319
     },
     {
       "name": "Soft Sunshine",
       "icon": "🌞",
-      "color": 16773494
+      "color": 4294963574
     },
     {
       "name": "Koi",
       "icon": "🐟",
-      "color": 16747109
+      "color": 4294937189
     },
     {
       "name": "Zen Gnome Crate",
       "icon": "🧙",
-      "color": 14142664
+      "color": 4292332744
     },
     {
       "name": "Spiked Mango",
       "icon": "🥭",
-      "color": 16498733
+      "color": 4294688813
     },
     {
       "name": "Pet Shard Tranquil",
       "icon": "🔹",
-      "color": 8508666
+      "color": 4286698746
     }
   ]
 }
