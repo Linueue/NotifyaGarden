@@ -57,7 +57,7 @@ class GrowAGarden {
                 delay(5000)
             }
             _uiState.update { currentState ->
-                currentState.copy(data.updatedAt, data.seedShop, data.gearShop, data.eggShop)
+                currentState.copy(data.updatedAt, data.seedShop, data.gearShop, data.eggShop, data.eventShop)
             }
         } catch (e: Exception) {
             println(e.toString())
@@ -107,7 +107,7 @@ class GrowAGarden {
                 Categories.EVENTS -> Pair(stocks.eventShop, views.events)
             }
 
-            val item = shop.items.getOrDefault(name, Item())
+            val item = shop.items.getOrDefault(name.trim(), Item())
             val view = ShopDataView(name, item.stock, Color(color), icon)
             if(item.stock != 0 && favorites.value.contains(name))
                 views.add(0, view)

@@ -17,6 +17,7 @@ This app uses Vulcan API, thus, there will be approximately 15-30 seconds delay 
 
 ## To Do
 - [x] Remote Updates
+- [x] Event Stocks
 - [ ] Refactor
 - [ ] Weather
 - [ ] Travelling Merchant
