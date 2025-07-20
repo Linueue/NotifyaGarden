@@ -2,9 +2,10 @@ import json
 from enum import Enum
 
 class Categories(Enum):
-    SEEDS = 0
-    GEARS = 1
-    EGGS  = 2
+    SEEDS  = 0
+    GEARS  = 1
+    EGGS   = 2
+    EVENTS = 3
 
 class Item:
     def __init__(self, name: str, icon: str, color: int):
@@ -36,7 +37,7 @@ class Items:
             f.write(json.dumps(values, ensure_ascii=False, indent=2))
 
 def main():
-    items = Items("1.14.0")
+    items = Items("1.15.0")
 
     items.add(Categories.SEEDS, Item("Carrot", "🥕", 0xFFFFA500))
     items.add(Categories.SEEDS, Item("Strawberry", "🍓", 0xFFDB3D21))
@@ -88,6 +89,19 @@ def main():
     items.add(Categories.EGGS, Item("Paradise Egg", "🌟", 0xFFFFD700))
     items.add(Categories.EGGS, Item("Bug Egg", "🐛", 0xFF556B2F))
     items.add(Categories.EGGS, Item("Bee Egg", "🐝", 0xFFFFC107))
+
+    items.add(Categories.EVENTS, Item("Zen Seed Pack", "🌱", 0xFFB74D))
+    items.add(Categories.EVENTS, Item("Zen Egg", "🥚", 0xFFF8E1))
+    items.add(Categories.EVENTS, Item("Hot Spring", "♨️", 0xFF7043))
+    items.add(Categories.EVENTS, Item("Zen Sand", "🏖️", 0xF4E2D8))
+    items.add(Categories.EVENTS, Item("Tranquil Radar", "📡", 0x90CAF9))
+    items.add(Categories.EVENTS, Item("Zenflare", "✨", 0xFFD54F))
+    items.add(Categories.EVENTS, Item("Zen Crate", "📦", 0xA1887F))
+    items.add(Categories.EVENTS, Item("Soft Sunshine", "🌞", 0xFFF176))
+    items.add(Categories.EVENTS, Item("Koi", "🐟", 0xFF8A65))
+    items.add(Categories.EVENTS, Item("Zen Gnome Crate", "🧙", 0xD7CCC8))
+    items.add(Categories.EVENTS, Item("Spiked Mango", "🥭", 0xFBC02D))
+    items.add(Categories.EVENTS, Item("Pet Shard Tranquil", "🔹", 0x81D4FA))
 
     items.serialize("update.json")
 
