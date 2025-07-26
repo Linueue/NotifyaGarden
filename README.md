@@ -21,4 +21,4 @@ This app uses Vulcan API, thus, there will be approximately 15-30 seconds delay 
 - [ ] Refactor
 - [ ] Weather
 - [ ] Travelling Merchant
-- [ ] Bottom Bar Navigation
+- [x] Bottom Bar Navigation

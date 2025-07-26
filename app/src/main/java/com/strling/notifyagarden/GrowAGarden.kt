@@ -15,7 +15,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 enum class Categories {
-    SEEDS, GEARS, EGGS, EVENTS,
+    SEEDS, GEARS, EGGS, EVENTS;
+
+    override fun toString(): String {
+        return when(this) {
+            SEEDS -> "Seeds"
+            GEARS -> "Gears"
+            EGGS -> "Eggs"
+            EVENTS -> "Event"
+        }
+    }
 }
 
 data class ShopDataView (
@@ -26,10 +35,7 @@ data class ShopDataView (
 )
 
 data class ShopDataViews (
-    val seeds: MutableList<ShopDataView>  = mutableListOf<ShopDataView>(),
-    val gears: MutableList<ShopDataView>  = mutableListOf<ShopDataView>(),
-    val eggs: MutableList<ShopDataView>   = mutableListOf<ShopDataView>(),
-    val events: MutableList<ShopDataView> = mutableListOf<ShopDataView>(),
+    val items: HashMap<Categories, MutableList<ShopDataView>> = hashMapOf(),
 )
 
 class GrowAGarden {
@@ -57,7 +63,7 @@ class GrowAGarden {
                 delay(5000)
             }
             _uiState.update { currentState ->
-                currentState.copy(data.updatedAt, data.seedShop, data.gearShop, data.eggShop, data.eventShop)
+                currentState.copy(data.updatedAt, data.itemShops)
             }
         } catch (e: Exception) {
             println(e.toString())
@@ -77,14 +83,10 @@ class GrowAGarden {
     {
         for(favorite in favorites)
         {
-            if(uiState.value.seedShop.items.containsKey(favorite))
-                fn(uiState.value.seedShop.items[favorite]!!)
-            if(uiState.value.gearShop.items.containsKey(favorite))
-                fn(uiState.value.gearShop.items[favorite]!!)
-            if(uiState.value.eggShop.items.containsKey(favorite))
-                fn(uiState.value.eggShop.items[favorite]!!)
-            if(uiState.value.eventShop.items.containsKey(favorite))
-                fn(uiState.value.eventShop.items[favorite]!!)
+            for(category in Categories.entries) {
+                if (uiState.value.itemShops[category]!!.items.containsKey(favorite))
+                    fn(uiState.value.itemShops[category]!!.items[favorite]!!)
+            }
         }
     }
 
@@ -99,20 +101,19 @@ class GrowAGarden {
     {
         val views = ShopDataViews()
 
-        val addShopView: (Categories, String, Long, String) -> Unit = { category, name, color, icon ->
-            val (shop, views) = when(category) {
-                Categories.SEEDS  -> Pair(stocks.seedShop, views.seeds)
-                Categories.GEARS  -> Pair(stocks.gearShop, views.gears)
-                Categories.EGGS   -> Pair(stocks.eggShop, views.eggs)
-                Categories.EVENTS -> Pair(stocks.eventShop, views.events)
-            }
+        for(category in Categories.entries)
+            views.items.put(category, mutableListOf())
 
-            val item = shop.items.getOrDefault(name.trim(), Item())
-            val view = ShopDataView(name, item.stock, Color(color), icon)
-            if(item.stock != 0 && favorites.value.contains(name))
-                views.add(0, view)
+        val addShopView: (Categories, String, Long, String) -> Unit = { category, name, color, icon ->
+            val shops = stocks.itemShops[category]
+            var stock = 0
+            if(shops != null)
+                stock = shops.items.getOrDefault(name.trim(), Item()).stock
+            val view = ShopDataView(name, stock, Color(color), icon)
+            if(stock != 0 && favorites.value.contains(name))
+                views.items[category]!!.add(0, view)
             else
-                views.add(view)
+                views.items[category]!!.add(view)
         }
 
         for(item in gameItems.seedsList)

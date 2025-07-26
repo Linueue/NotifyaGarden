@@ -23,11 +23,13 @@
             android:theme="@style/Theme.NotifyAGarden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <receiver android:name=".NotifyBroadcast" />
+        <service android:name=".NotificationMessagingService" />
     </application>
 
 </manifest>

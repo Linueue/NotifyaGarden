@@ -13,5 +13,6 @@
 /.kotlin
 .externalNativeBuild
 .cxx
+/app/google-services.json
 local.properties
 key

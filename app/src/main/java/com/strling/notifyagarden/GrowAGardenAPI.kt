@@ -35,10 +35,7 @@ data class ItemShop (
 
 data class GrowAGardenData (
     var updatedAt: Long = 0,
-    val seedShop: ItemShop = ItemShop(),
-    val gearShop: ItemShop = ItemShop(),
-    val eggShop: ItemShop = ItemShop(),
-    val eventShop: ItemShop = ItemShop(),
+    val itemShops: HashMap<Categories, ItemShop> = hashMapOf(),
 )
 
 class GrowAGardenAPI {
@@ -85,6 +82,9 @@ class GrowAGardenAPI {
         val data = GrowAGardenData()
         val responseAPI: Result<StocksResponse> = requestStocks()
 
+        for(category in Categories.entries)
+            data.itemShops.put(category, ItemShop())
+
         if(!responseAPI.isSuccess)
             return Result.failure(RuntimeException("Could not fetch URL"))
 
@@ -94,25 +94,25 @@ class GrowAGardenAPI {
         for(seed in response.seedsStock)
         {
             val item: Item = parse(seed)
-            data.seedShop.items[item.name] = item
+            data.itemShops[Categories.SEEDS]!!.items[item.name] = item
         }
 
         for(gear in response.gearStock)
         {
             val item: Item = parse(gear)
-            data.gearShop.items[item.name] = item
+            data.itemShops[Categories.GEARS]!!.items[item.name] = item
         }
 
         for(egg in response.eggStock)
         {
             val item: Item = parse(egg)
-            data.eggShop.items[item.name] = item
+            data.itemShops[Categories.EGGS]!!.items[item.name] = item
         }
 
         for(event in response.eventStock)
         {
             val item: Item = parse(event)
-            data.eventShop.items[item.name] = item
+            data.itemShops[Categories.EVENTS]!!.items[item.name] = item
         }
 
         return Result.success(data)

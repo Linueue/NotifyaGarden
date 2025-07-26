@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ScrollState
@@ -18,6 +19,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -26,6 +28,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,6 +38,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +51,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -55,7 +60,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -64,10 +68,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -157,7 +164,6 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun content()
     {
-        val connection = remember { ExpandableAppBarConnection(TOP_BAR_HEIGHT) }
         val timerViewModel: TimerViewModel by viewModels()
         val editMode = remember { mutableStateOf(false) }
         val scheduler = NotifyAlarmManager(this)
@@ -167,7 +173,13 @@ class MainActivity : ComponentActivity() {
         val gameItemsFlow: Flow<GameItemsOuterClass.GameItems> = gameItemsDataStore.data
         val gameItems = gameItemsFlow.collectAsState(GameItemsOuterClass.GameItems.getDefaultInstance()).value
         val context = this
-        val scrollState = rememberScrollState()
+
+        val currentSelected = remember { mutableStateOf(Categories.SEEDS) }
+        val scrollStates = List(Categories.entries.size) { rememberScrollState() }
+        val connections = List(Categories.entries.size) { remember { ExpandableAppBarConnection(TOP_BAR_HEIGHT) } }
+        //val connection = remember(currentSelected) { ExpandableAppBarConnection(TOP_BAR_HEIGHT) }
+        val connection = connections[currentSelected.value.ordinal]
+
         LaunchedEffect(Unit)
         {
             val isRunning = scheduler.isRunning()
@@ -179,66 +191,23 @@ class MainActivity : ComponentActivity() {
         }
         Scaffold(topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                expandedAppBar(height = connection.appBarHeight, editable = editMode)
+                expandedAppBar(height = connection.appBarHeight, currentSelected = currentSelected.value, editable = editMode)
                 collapsedAppBar(height = connection.appBarHeight, editable = editMode, scheduler = scheduler, preferences = preferences)
             }
-        }, modifier = Modifier.fillMaxSize().nestedScroll(connection), containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
-            Column(modifier = Modifier.fillMaxSize().padding(innerPadding).background(MaterialTheme.colorScheme.background).verticalScroll(scrollState))
-            {
-                fetchButtons(scheduler, preferences)
-                val uiState = NotifyData.game.uiState.collectAsState()
-                val timerState = timerViewModel.uiState.collectAsState()
+        }, bottomBar = { bottomAppBar(currentSelected = currentSelected) }, modifier = Modifier.fillMaxSize().nestedScroll(connection), containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
+            val uiState = NotifyData.game.uiState.collectAsState()
+            val views = NotifyData.game.getData(uiState.value, NotifyData.game.favorites, gameItems)
 
-                LaunchedEffect(NotifyData.timer.uiState.collectAsState().value) {
-                    timerViewModel.updateTimer()
-                }
-
-                Column(
-                    modifier = Modifier.fillMaxWidth().height(88.dp).padding(5.dp).clip(
-                        RoundedCornerShape(15.dp)
-                    )
-                        .background(MaterialTheme.colorScheme.surface),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                )
-                {
-                    Text("Next Restock", fontSize = 16.sp)
-                    Text(NotifyData.timer.formatTimer(timerState.value), fontSize = 20.sp)
-                }
-
-                val views = NotifyData.game.getData(uiState.value, NotifyData.game.favorites, gameItems)
-                val categories = listOf<String>("Seeds", "Gears", "Eggs", "Event Stock")
-                categories.forEach { category ->
-                    val items = when(category)
-                    {
-                        "Seeds" -> views.seeds;
-                        "Gears" -> views.gears;
-                        "Eggs" -> views.eggs;
-                        "Event Stock" -> views.events;
-                        else -> listOf();
-                    }
-
-                    if(items.isEmpty())
-                        return@forEach
-
-                    Text(
-                        category,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(15.dp, 0.dp).graphicsLayer { alpha = 0.8f })
-                    items.forEach { view ->
-                        displayShopView(view, editMode, NotifyData.game.favorites)
-                    }
-                }
-            }
+            displayCategory(
+                modifier = Modifier.padding(innerPadding),
+                items = views.items[currentSelected.value]!!,
+                scrollState = scrollStates[currentSelected.value.ordinal],
+                editMode = editMode,
+                scheduler = scheduler,
+                preferences = preferences,
+                timerViewModel = timerViewModel,
+            )
         }
-    }
-
-    @Composable
-    @Preview
-    fun testView()
-    {
-        val view = ShopDataView("Carrot", 12, Color(0xFFF98230), "🥕")
-        displayShopView(view, remember { mutableStateOf(false) }, remember { mutableStateOf(setOf<String>()) })
     }
 
     @Composable
@@ -268,7 +237,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    
+
     @Composable
     fun displayShopView(view: ShopDataView, editable: MutableState<Boolean>, notifyStocks: MutableState<Set<String>>)
     {
@@ -310,19 +279,92 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Composable
+    fun displayCategory(modifier: Modifier = Modifier, items: List<ShopDataView>, scrollState: ScrollState, editMode: MutableState<Boolean>, scheduler: NotifyAlarmManager, preferences: NotifyDataStore, timerViewModel: TimerViewModel)
+    {
+        Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).verticalScroll(scrollState))
+        {
+            fetchButtons(scheduler, preferences)
+            val timerState = timerViewModel.uiState.collectAsState()
+
+            LaunchedEffect(NotifyData.timer.uiState.collectAsState().value) {
+                timerViewModel.updateTimer()
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth().height(88.dp).padding(5.dp).clip(
+                    RoundedCornerShape(15.dp)
+                )
+                    .background(MaterialTheme.colorScheme.surface),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            )
+            {
+                Text("Next Restock", fontSize = 16.sp)
+                Text(NotifyData.timer.formatTimer(timerState.value), fontSize = 20.sp)
+            }
+
+            items.forEach { view ->
+                displayShopView(view, editMode, NotifyData.game.favorites)
+            }
+        }
+    }
+
+    @Composable
+    fun bottomAppBar(modifier: Modifier = Modifier, currentSelected: MutableState<Categories>)
+    {
+        val layoutDirection = LocalLayoutDirection.current
+        val navigationPadding = WindowInsets.navigationBars.asPaddingValues()
+        val horizontal = navigationPadding.calculateLeftPadding(layoutDirection) + navigationPadding.calculateRightPadding(layoutDirection)
+        //val contentPadding = PaddingValues(horizontal = horizontal, vertical = 0.dp)
+        val contentPadding = navigationPadding
+        BottomAppBar(
+            actions = {
+                Row(modifier = modifier,
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    val colors = ButtonDefaults.buttonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                        containerColor = MaterialTheme.colorScheme.background,
+                    )
+                    Categories.entries.forEach { category ->
+                        Button(
+                            modifier = Modifier.weight(1.0f),
+                            colors = colors,
+                            onClick = { currentSelected.value = category }) {
+                            Text(
+                                category.toString(),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontWeight = if (currentSelected.value == category) FontWeight.Bold else FontWeight.Normal,
+                                style = TextStyle(
+                                    textDecoration = if (currentSelected.value == category)
+                                        TextDecoration.Underline
+                                    else
+                                        TextDecoration.None
+                                )
+                            )
+                        }
+                    }
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.background,
+            modifier = modifier.height(80.dp),
+        )
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun expandedAppBar(modifier: Modifier = Modifier, height: Int, editable: MutableState<Boolean>)
+    fun expandedAppBar(modifier: Modifier = Modifier, height: Int, currentSelected: Categories, editable: MutableState<Boolean>)
     {
         val insets = WindowInsets.statusBars.asPaddingValues()
         val padding = insets.calculateTopPadding()
         var progress = (height / TOP_BAR_HEIGHT.toFloat()).coerceIn(0.0f, 1.0f)
         progress = 2.0f * (progress - 0.5f)
-        val heightAnimated by animateDpAsState(height.dp, label = "Animated height")
         val title = if(editable.value) "Notify me on" else "Stock"
 
         TopAppBar(
-            modifier = modifier.height(heightAnimated).padding(top = padding),
+            modifier = modifier.height(height.dp).padding(top = padding),
             title = {
                 Box(
                     modifier = Modifier.fillMaxWidth().fillMaxHeight(1.0f),
