@@ -23,13 +23,6 @@ class Timer {
         return "${minute}:${seconds}"
     }
 
-    fun resetTime()
-    {
-        _uiState.update {
-            0L
-        }
-    }
-
     fun getTime(startTime: Long): Long
     {
         val time = startTime / 1000

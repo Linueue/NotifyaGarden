@@ -1,6 +1,12 @@
 package com.strling.notifyagarden
 
+import androidx.annotation.Keep
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.PropertyName
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -9,19 +15,44 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okio.IOException
 
+@Keep
 @Serializable
 data class ItemResponse (
-    val name: String,
-    val value: Int,
+    @set:PropertyName("display_name")
+    @get:PropertyName("display_name")
+    var name: String = "",
+    @set:PropertyName("quantity")
+    @get:PropertyName("quantity")
+    var value: Int = 0,
 )
 
+@Keep
+@Serializable
+data class WeatherResponse (
+    @set:PropertyName("weather_name")
+    @get:PropertyName("weather_name")
+    var name: String = "",
+)
+
+@Keep
 @Serializable
 data class StocksResponse (
-    val gearStock: List<ItemResponse>,
-    val eggStock: List<ItemResponse>,
-    val seedsStock: List<ItemResponse>,
-    val eventStock: List<ItemResponse>,
-    val lastApiFetch: Long,
+    @set:PropertyName("gear_stock")
+    @get:PropertyName("gear_stock")
+    var gearStock: List<ItemResponse> = listOf(),
+    @set:PropertyName("egg_stock")
+    @get:PropertyName("egg_stock")
+    var eggStock: List<ItemResponse> = listOf(),
+    @set:PropertyName("seed_stock")
+    @get:PropertyName("seed_stock")
+    var seedsStock: List<ItemResponse> = listOf(),
+    @set:PropertyName("eventshop_stock")
+    @get:PropertyName("eventshop_stock")
+    var eventStock: List<ItemResponse> = listOf(),
+    var weather: List<WeatherResponse> = listOf(),
+    @set:PropertyName("updated_at")
+    @get:PropertyName("updated_at")
+    var updatedAt: Long = 0,
 )
 
 data class Item (
@@ -36,6 +67,7 @@ data class ItemShop (
 data class GrowAGardenData (
     var updatedAt: Long = 0,
     val itemShops: HashMap<Categories, ItemShop> = hashMapOf(),
+    var weather: List<WeatherResponse> = listOf(),
 )
 
 class GrowAGardenAPI {
@@ -79,37 +111,50 @@ class GrowAGardenAPI {
 
     suspend fun fetchStocks(): Result<GrowAGardenData>
     {
-        val data = GrowAGardenData()
-        val responseAPI: Result<StocksResponse> = requestStocks()
+        val db = Firebase.firestore
+
+        val document = db.collection("stocks")
+            .orderBy("updated_at", Query.Direction.DESCENDING)
+            .limit(1)
+            .get()
+            .await()
+
+        if(document.isEmpty)
+            return Result.failure(RuntimeException("Could not get values from database"))
+
+        val documentResponse = document.documents.first()
+        val stocks = documentResponse.toObject(StocksResponse::class.java)
+
+        if(stocks == null)
+            return Result.failure(RuntimeException("Could not get values"))
+
+        var data = GrowAGardenData()
+
+        data.weather = stocks!!.weather
+        data.updatedAt = stocks!!.updatedAt
 
         for(category in Categories.entries)
             data.itemShops.put(category, ItemShop())
 
-        if(!responseAPI.isSuccess)
-            return Result.failure(RuntimeException("Could not fetch URL"))
-
-        val response = responseAPI.getOrNull()!!
-        data.updatedAt = response.lastApiFetch
-
-        for(seed in response.seedsStock)
+        for(seed in stocks!!.seedsStock)
         {
             val item: Item = parse(seed)
             data.itemShops[Categories.SEEDS]!!.items[item.name] = item
         }
 
-        for(gear in response.gearStock)
+        for(gear in stocks!!.gearStock)
         {
             val item: Item = parse(gear)
             data.itemShops[Categories.GEARS]!!.items[item.name] = item
         }
 
-        for(egg in response.eggStock)
+        for(egg in stocks!!.eggStock)
         {
             val item: Item = parse(egg)
             data.itemShops[Categories.EGGS]!!.items[item.name] = item
         }
 
-        for(event in response.eventStock)
+        for(event in stocks!!.eventStock)
         {
             val item: Item = parse(event)
             data.itemShops[Categories.EVENTS]!!.items[item.name] = item

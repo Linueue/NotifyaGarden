@@ -18,31 +18,24 @@ class TimerViewModel: ViewModel() {
 
     fun updateTimer()
     {
-        if(NotifyData.timer.uiState.value == 0L)
-            return
-        println(NotifyData.game.favorites.value)
-
         _job?.cancel()
         _job = viewModelScope.launch {
-            val startTime = NotifyData.timer.uiState.value / 1000.0
+            fetch(false)
+
+            var startTime = NotifyData.game.uiState.value.updatedAt / 1000.0
             while(true)
             {
-                if(!NotifyState.isNotifyRunning.value) {
-                    _uiState.update { currentState ->
-                        currentState.copy(0, 0)
-                    }
-                    NotifyData.game.reset()
-                    NotifyData.timer.resetTime()
-                    break
-                }
-
                 val currentTime = System.currentTimeMillis() / 1000.0
-                val diff = (60 * 5) - (currentTime - startTime)
+                val nextFiveMins = (60 * 5) - (currentTime % (60 * 5))
+                val diff = (nextFiveMins)
                 val minutesFloat = diff / 60
                 val minutes = floor(minutesFloat).toInt()
                 val seconds = floor((minutesFloat - minutes) * 60).toInt()
-                if(minutes < 0 || seconds < 0)
-                    break
+                if(minutes < 0 && seconds <= 0 || seconds <= 0) {
+                    fetch(minutes == 0)
+                    startTime = NotifyData.game.uiState.value.updatedAt / 1000.0
+                    continue
+                }
                 _uiState.update { currentState ->
                     currentState.copy(minutes, seconds)
                 }
@@ -52,14 +45,28 @@ class TimerViewModel: ViewModel() {
         }
     }
 
-    fun fetchIfRunning()
+    fun getTime(startTime: Long): Long
     {
-        if(!NotifyState.isNotifyRunning.value)
-            return
+        val time = startTime / 1000
+        val currentTime = System.currentTimeMillis() / 1000
+        val next = (5 * 60) - (currentTime - time)
+        return ((currentTime + next) * 1000)
+    }
 
-        viewModelScope.launch {
+    suspend fun fetch(tryConnect: Boolean)
+    {
+        val currentUpdatedAt = NotifyData.game.uiState.value.updatedAt
+        
+        for(i in 1..5) {
             NotifyData.game.fetchStocks()
-            NotifyData.timer.getTime(NotifyData.game.uiState.value.updatedAt)
+
+            if(!tryConnect)
+                break
+            
+            if(currentUpdatedAt != NotifyData.game.uiState.value.updatedAt)
+                break
+
+            delay(5000)
         }
     }
 }

@@ -78,10 +78,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.firestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.strling.notifyagarden.proto.GameItemsOuterClass
 import com.strling.notifyagarden.ui.theme.NotifyAGardenTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.tasks.await
 
 class MainActivity : ComponentActivity() {
     val TOP_BAR_HEIGHT: Int = 280
@@ -182,12 +187,11 @@ class MainActivity : ComponentActivity() {
 
         LaunchedEffect(Unit)
         {
-            val isRunning = scheduler.isRunning()
-            NotifyState.setNotifyRunning(isRunning)
-            timerViewModel.fetchIfRunning()
+            timerViewModel.fetch(false)
 
             val gameItemsFirst = context.gameItemsDataStore.data.first()
             GameItemsAPI.update(gameItemsFirst.version, context)
+            timerViewModel.updateTimer()
         }
         Scaffold(topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -207,34 +211,6 @@ class MainActivity : ComponentActivity() {
                 preferences = preferences,
                 timerViewModel = timerViewModel,
             )
-        }
-    }
-
-    @Composable
-    fun fetchButtons(scheduler: NotifyAlarmManager, preferences: NotifyDataStore)
-    {
-        Button(onClick = {
-            if(!NotifyState.isNotifyRunning.value)
-                scheduler.schedule(0, NotifyData.game.favorites.value)
-            else
-                scheduler.cancel()
-            //Intent(applicationContext, NotificationService::class.java).also {
-            //    it.action = if(!ServiceState.isServiceRunning.value) NotificationService.Actions.START.toString() else NotificationService.Actions.STOP.toString()
-
-            //    startService(it)
-            //}
-        },
-            colors = ButtonDefaults.buttonColors(contentColor = MaterialTheme.colorScheme.surface),
-            modifier = Modifier.fillMaxWidth().height(80.dp).padding(5.dp).clip(
-                RoundedCornerShape(25.dp)
-            )) {
-            Column(modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center)
-            {
-                val text = if(!NotifyState.isNotifyRunning.value) "Fetch" else "Stop"
-                Text(text, modifier = Modifier.padding(12.dp))
-            }
         }
     }
 
@@ -284,12 +260,7 @@ class MainActivity : ComponentActivity() {
     {
         Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).verticalScroll(scrollState))
         {
-            fetchButtons(scheduler, preferences)
             val timerState = timerViewModel.uiState.collectAsState()
-
-            LaunchedEffect(NotifyData.timer.uiState.collectAsState().value) {
-                timerViewModel.updateTimer()
-            }
 
             Column(
                 modifier = Modifier.fillMaxWidth().height(88.dp).padding(5.dp).clip(
@@ -300,8 +271,26 @@ class MainActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Center,
             )
             {
-                Text("Next Restock", fontSize = 16.sp)
+                Text("Next Restock", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 Text(NotifyData.timer.formatTimer(timerState.value), fontSize = 20.sp)
+            }
+            Column(
+                modifier = Modifier.fillMaxWidth().height(88.dp).padding(5.dp).clip(
+                    RoundedCornerShape(15.dp)
+                )
+                    .background(MaterialTheme.colorScheme.surface),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            )
+            {
+                Text("Weather", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                val weather = NotifyData.game.uiState.collectAsState().value.weather
+                var weatherString = ""
+                if(weather.isNotEmpty())
+                    weatherString = weather[0].name
+                for(i in 1..<weather.size)
+                    weatherString += ", ${weather[i].name}"
+                Text(weatherString, fontSize = 16.sp)
             }
 
             items.forEach { view ->
@@ -362,15 +351,19 @@ class MainActivity : ComponentActivity() {
         var progress = (height / TOP_BAR_HEIGHT.toFloat()).coerceIn(0.0f, 1.0f)
         progress = 2.0f * (progress - 0.5f)
         val title = if(editable.value) "Notify me on" else "Stock"
+        val totalHeight = (height + 56) / 2.0
 
         TopAppBar(
             modifier = modifier.height(height.dp).padding(top = padding),
             title = {
-                Box(
-                    modifier = Modifier.fillMaxWidth().fillMaxHeight(1.0f),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(title, fontSize = 40.sp, modifier = Modifier.graphicsLayer { alpha = progress })
+                Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().height(height.dp),
+                    contentAlignment = Alignment.Center) {
+                    Text(
+                        title,
+                        fontSize = 40.sp,
+                        modifier = Modifier.graphicsLayer { alpha = progress }
+                            .offset(y = (totalHeight - (height / 2)).dp)
+                    )
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
@@ -398,13 +391,8 @@ class MainActivity : ComponentActivity() {
                     IconButton(onClick = {
                         editable.value = !editable.value
 
-                        if(!editable.value && NotifyState.isNotifyRunning.value)
-                        {
+                        if(!editable.value)
                             NotifyData.game.saveFavorites(preferences)
-                            scheduler.cancel()
-                            val time = NotifyData.timer.getTime(NotifyData.game.uiState.value.updatedAt)
-                            scheduler.schedule(time, NotifyData.game.favorites.value)
-                        }
                     }) {
                         Icon(
                             modifier = Modifier.size(24.dp),

@@ -47,29 +47,18 @@ class GrowAGarden {
 
     suspend fun fetchStocks(): Boolean
     {
-        var fetched = false
-        try {
-            var data = _uiState.value
-            for(i in 1..5) {
-                val retrieved = api.fetchStocks()
+        var data = _uiState.value
+        val retrieved = api.fetchStocks()
 
-                if(!retrieved.isSuccess)
-                    break
-                data = retrieved.getOrNull()!!
-                if(data.updatedAt != _uiState.value.updatedAt) {
-                    fetched = true
-                    break
-                }
-                delay(5000)
-            }
-            _uiState.update { currentState ->
-                currentState.copy(data.updatedAt, data.itemShops)
-            }
-        } catch (e: Exception) {
-            println(e.toString())
+        if(!retrieved.isSuccess)
+            return false
+
+        data = retrieved.getOrNull()!!
+        _uiState.update { currentState ->
+            currentState.copy(data.updatedAt, data.itemShops, data.weather)
         }
 
-        return fetched
+        return true
     }
 
     fun saveFavorites(dataStore: NotifyDataStore)
