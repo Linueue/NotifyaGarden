@@ -207,6 +207,7 @@ class MainActivity : ComponentActivity() {
                 items = views.items[currentSelected.value]!!,
                 scrollState = scrollStates[currentSelected.value.ordinal],
                 editMode = editMode,
+                category = currentSelected.value,
                 scheduler = scheduler,
                 preferences = preferences,
                 timerViewModel = timerViewModel,
@@ -215,7 +216,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun displayShopView(view: ShopDataView, editable: MutableState<Boolean>, notifyStocks: MutableState<Set<String>>)
+    fun displayShopView(view: ShopDataView, editable: MutableState<Boolean>, notifyStocks: MutableState<Set<String>>, isStock: Boolean)
     {
         Box(
             modifier = Modifier.fillMaxWidth().height(88.dp).padding(5.dp).clip(
@@ -245,8 +246,13 @@ class MainActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.Center)
                 {
                     Text(view.name, fontSize = 20.sp)
+                    val description = if(isStock) {
+                        "x" + view.stock
+                    } else {
+                        if(view.stock == 1) "Active" else "Inactive"
+                    }
                     Text(
-                        "x" + view.stock,
+                        description,
                         fontSize = 16.sp,
                         modifier = Modifier.graphicsLayer { alpha = 0.8f }
                     )
@@ -256,7 +262,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun displayCategory(modifier: Modifier = Modifier, items: List<ShopDataView>, scrollState: ScrollState, editMode: MutableState<Boolean>, scheduler: NotifyAlarmManager, preferences: NotifyDataStore, timerViewModel: TimerViewModel)
+    fun displayCategory(modifier: Modifier = Modifier, items: List<ShopDataView>, scrollState: ScrollState, editMode: MutableState<Boolean>, category: Categories, scheduler: NotifyAlarmManager, preferences: NotifyDataStore, timerViewModel: TimerViewModel)
     {
         Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).verticalScroll(scrollState))
         {
@@ -293,8 +299,10 @@ class MainActivity : ComponentActivity() {
                 Text(weatherString, fontSize = 16.sp)
             }
 
+            val isStock = category != Categories.WEATHER
+
             items.forEach { view ->
-                displayShopView(view, editMode, NotifyData.game.favorites)
+                displayShopView(view, editMode, NotifyData.game.favorites, isStock)
             }
         }
     }

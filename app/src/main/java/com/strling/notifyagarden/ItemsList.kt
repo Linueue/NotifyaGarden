@@ -93,6 +93,7 @@ object GameItemsAPI
                         Categories.GEARS -> builder.addGears(gameItemBuilder)
                         Categories.EGGS -> builder.addEggs(gameItemBuilder)
                         Categories.EVENTS -> builder.addEvents(gameItemBuilder)
+                        Categories.WEATHER -> builder.addWeather(gameItemBuilder)
                     }
                 }
             }

@@ -118,8 +118,25 @@ class GrowAGarden {
         for(item in gameItems.eventsList)
             addShopView(Categories.EVENTS, item.name, item.color, item.icon)
 
-        for(item in gameItems.)
-            addShopView(Categories.EVENTS, item.name, item.color, item.icon)
+        for(item in gameItems.weatherList) {
+            var isActive = false
+            var stock = 0
+
+            for(weather in stocks.weather) {
+                if (item.name == weather.name) {
+                    isActive = true
+                    stock = 1
+                    break
+                }
+            }
+
+            val view = ShopDataView(item.name, stock, Color(item.color), item.icon)
+
+            if(isActive && favorites.value.contains(item.name))
+                views.items[Categories.WEATHER]!!.add(0, view)
+            else
+                views.items[Categories.WEATHER]!!.add(view)
+        }
 
         return views
     }
