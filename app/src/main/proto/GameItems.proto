@@ -17,4 +17,5 @@ message GameItems
   repeated GameItem gears = 3;
   repeated GameItem eggs = 4;
   repeated GameItem events = 5;
+  repeated GameItem weather = 6;
 }

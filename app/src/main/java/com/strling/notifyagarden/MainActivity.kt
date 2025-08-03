@@ -198,7 +198,7 @@ class MainActivity : ComponentActivity() {
                 expandedAppBar(height = connection.appBarHeight, currentSelected = currentSelected.value, editable = editMode)
                 collapsedAppBar(height = connection.appBarHeight, editable = editMode, scheduler = scheduler, preferences = preferences)
             }
-        }, bottomBar = { bottomAppBar(currentSelected = currentSelected) }, modifier = Modifier.fillMaxSize().nestedScroll(connection), containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
+        }, bottomBar = { bottomAppBar(currentSelected = currentSelected, gameItems = gameItems) }, modifier = Modifier.fillMaxSize().nestedScroll(connection), containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
             val uiState = NotifyData.game.uiState.collectAsState()
             val views = NotifyData.game.getData(uiState.value, NotifyData.game.favorites, gameItems)
 
@@ -300,7 +300,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun bottomAppBar(modifier: Modifier = Modifier, currentSelected: MutableState<Categories>)
+    fun bottomAppBar(modifier: Modifier = Modifier, currentSelected: MutableState<Categories>, gameItems: GameItemsOuterClass.GameItems)
     {
         val layoutDirection = LocalLayoutDirection.current
         val navigationPadding = WindowInsets.navigationBars.asPaddingValues()
@@ -318,6 +318,9 @@ class MainActivity : ComponentActivity() {
                         containerColor = MaterialTheme.colorScheme.background,
                     )
                     Categories.entries.forEach { category ->
+                        if(category == Categories.EVENTS && gameItems.eventsList.isEmpty())
+                            return@forEach
+
                         Button(
                             modifier = Modifier.weight(1.0f),
                             colors = colors,

@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 enum class Categories {
-    SEEDS, GEARS, EGGS, EVENTS;
+    SEEDS, GEARS, EGGS, EVENTS, WEATHER;
 
     override fun toString(): String {
         return when(this) {
@@ -23,6 +23,7 @@ enum class Categories {
             GEARS -> "Gears"
             EGGS -> "Eggs"
             EVENTS -> "Event"
+            WEATHER -> "Weather"
         }
     }
 }
@@ -115,6 +116,9 @@ class GrowAGarden {
             addShopView(Categories.EGGS, item.name, item.color, item.icon)
 
         for(item in gameItems.eventsList)
+            addShopView(Categories.EVENTS, item.name, item.color, item.icon)
+
+        for(item in gameItems.)
             addShopView(Categories.EVENTS, item.name, item.color, item.icon)
 
         return views

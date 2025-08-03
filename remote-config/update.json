@@ -1,5 +1,5 @@
 {
-  "version": "1.15.1",
+  "version": "1.17.0",
   "seeds": [
     {
       "name": "Carrot",
@@ -110,6 +110,11 @@
       "name": "Giant Pinecone",
       "icon": "🌲",
       "color": 4287317267
+    },
+    {
+      "name": "Elder Strawberry",
+      "icon": "🍓",
+      "color": 4292558113
     }
   ],
   "gears": [
@@ -117,6 +122,11 @@
       "name": "Watering Can",
       "icon": "🪣",
       "color": 4289774814
+    },
+    {
+      "name": "Trading Ticket",
+      "icon": "🎟️",
+      "color": 4294956800
     },
     {
       "name": "Trowel",
@@ -189,6 +199,11 @@
       "color": 4288335154
     },
     {
+      "name": "Grandmaster Sprinkler",
+      "icon": "🌊",
+      "color": 4282811060
+    },
+    {
       "name": "Levelup Lollipop",
       "icon": "🍭",
       "color": 4285160141
@@ -206,24 +221,9 @@
       "color": 4293978838
     },
     {
-      "name": "Uncommon Egg",
-      "icon": "🟡",
-      "color": 4294967040
-    },
-    {
-      "name": "Rare Egg",
-      "icon": "🔵",
-      "color": 4280193279
-    },
-    {
       "name": "Rare Summer Egg",
       "icon": "🔵",
       "color": 4280193279
-    },
-    {
-      "name": "Legendary Egg",
-      "icon": "🟣",
-      "color": 4287245282
     },
     {
       "name": "Mythical Egg",
@@ -239,73 +239,239 @@
       "name": "Bug Egg",
       "icon": "🐛",
       "color": 4283788079
-    },
-    {
-      "name": "Bee Egg",
-      "icon": "🐝",
-      "color": 4294951175
     }
   ],
-  "events": [
+  "events": [],
+  "weather": [
     {
-      "name": "Zen Seed Pack",
-      "icon": "🌱",
-      "color": 4294948685
+      "name": "Aurora Borealis",
+      "icon": "🌌",
+      "color": 4286578644
     },
     {
-      "name": "Zen Egg",
-      "icon": "🥚",
-      "color": 4294965473
+      "name": "Blood Moon",
+      "icon": "🌕",
+      "color": 4287299584
     },
     {
-      "name": "Hot Spring",
-      "icon": "♨️",
-      "color": 4294930499
+      "name": "Frost",
+      "icon": "❄️",
+      "color": 4289583334
     },
     {
-      "name": "Zen Sand",
+      "name": "Gale",
+      "icon": "💨",
+      "color": 4289781990
+    },
+    {
+      "name": "Heatwave",
+      "icon": "🔥",
+      "color": 4294919424
+    },
+    {
+      "name": "Meteor Shower",
+      "icon": "☄️",
+      "color": 4285563024
+    },
+    {
+      "name": "Night",
+      "icon": "🌃",
+      "color": 4279834992
+    },
+    {
+      "name": "Rain",
+      "icon": "🌧️",
+      "color": 4282811060
+    },
+    {
+      "name": "Sandstorm",
+      "icon": "🏜️",
+      "color": 4292786311
+    },
+    {
+      "name": "Thunderstorm",
+      "icon": "⛈️",
+      "color": 4283105410
+    },
+    {
+      "name": "Tornado",
+      "icon": "🌪️",
+      "color": 4285098345
+    },
+    {
+      "name": "Tropical Rain",
+      "icon": "🌴",
+      "color": 4280332970
+    },
+    {
+      "name": "Windy",
+      "icon": "🌬️",
+      "color": 4289309097
+    },
+    {
+      "name": "Bee Swarm",
+      "icon": "🐝",
+      "color": 4294967040
+    },
+    {
+      "name": "Mega Harvest",
+      "icon": "🌾",
+      "color": 4294222944
+    },
+    {
+      "name": "Summer Harvest",
+      "icon": "🍉",
+      "color": 4294927175
+    },
+    {
+      "name": "Working Bee Swarm",
+      "icon": "🐝",
+      "color": 4292519200
+    },
+    {
+      "name": "Zen Aura",
+      "icon": "🧘",
+      "color": 4287852763
+    },
+    {
+      "name": "Acid Rain",
+      "icon": "🧪",
+      "color": 4286578432
+    },
+    {
+      "name": "Alien Invasion",
+      "icon": "👽",
+      "color": 4278255487
+    },
+    {
+      "name": "Armageddon",
+      "icon": "💥",
+      "color": 4287299584
+    },
+    {
+      "name": "BeeNado",
+      "icon": "🌪️",
+      "color": 4294956800
+    },
+    {
+      "name": "Bee Storm",
+      "icon": "🐝",
+      "color": 4294944000
+    },
+    {
+      "name": "Black Hole",
+      "icon": "🕳️",
+      "color": 4278190080
+    },
+    {
+      "name": "Under The Sea",
+      "icon": "🌊",
+      "color": 4278243025
+    },
+    {
+      "name": "Fried Chicken",
+      "icon": "🍗",
+      "color": 4291659071
+    },
+    {
+      "name": "Chocolate Rain",
+      "icon": "🍫",
+      "color": 4287317267
+    },
+    {
+      "name": "Crystal Beams",
+      "icon": "🔮",
+      "color": 4278255615
+    },
+    {
+      "name": "Disco",
+      "icon": "💃",
+      "color": 4294928820
+    },
+    {
+      "name": "DJ Sam",
+      "icon": "🎧",
+      "color": 4287889619
+    },
+    {
+      "name": "Drought",
+      "icon": "🌵",
+      "color": 4294222944
+    },
+    {
+      "name": "Jandel Zombie",
+      "icon": "🧟",
+      "color": 4283788079
+    },
+    {
+      "name": "Luck",
+      "icon": "🍀",
+      "color": 4281519410
+    },
+    {
+      "name": "Meteor Strike",
+      "icon": "☄️",
+      "color": 4292613180
+    },
+    {
+      "name": "Obby",
+      "icon": "🧱",
+      "color": 4289864226
+    },
+    {
+      "name": "Pool Party",
       "icon": "🏖️",
-      "color": 4294238936
+      "color": 4278239231
     },
     {
-      "name": "Tranquil Radar",
-      "icon": "📡",
-      "color": 4287679225
+      "name": "Radioactive Carrot",
+      "icon": "🥕",
+      "color": 4289593135
     },
     {
-      "name": "Zenflare",
-      "icon": "✨",
-      "color": 4294956367
+      "name": "Shooting Stars",
+      "icon": "🌠",
+      "color": 4294956800
     },
     {
-      "name": "Zen Crate",
-      "icon": "📦",
-      "color": 4288776319
+      "name": "Solar Eclipse",
+      "icon": "🌑",
+      "color": 4281290575
     },
     {
-      "name": "Soft Sunshine",
-      "icon": "🌞",
-      "color": 4294963574
+      "name": "Solar Flare",
+      "icon": "☀️",
+      "color": 4294944000
     },
     {
-      "name": "Koi",
-      "icon": "🐟",
-      "color": 4294937189
+      "name": "Space Travel",
+      "icon": "🚀",
+      "color": 4282924427
     },
     {
-      "name": "Zen Gnome Crate",
-      "icon": "🧙",
-      "color": 4292332744
+      "name": "Volcano",
+      "icon": "🌋",
+      "color": 4289864226
     },
     {
-      "name": "Spiked Mango",
-      "icon": "🥭",
-      "color": 4294688813
+      "name": "Lightning Storm",
+      "icon": "🌩️",
+      "color": 4286578816
     },
     {
-      "name": "Pet Shard Tranquil",
-      "icon": "🔹",
-      "color": 4286698746
+      "name": "Post Dunk",
+      "icon": "🏀",
+      "color": 4294937600
+    },
+    {
+      "name": "Route Runner",
+      "icon": "🏃",
+      "color": 4278254234
+    },
+    {
+      "name": "Money Rain",
+      "icon": "💸",
+      "color": 4281519410
     }
   ]
 }
