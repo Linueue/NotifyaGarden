@@ -20,7 +20,8 @@ class TimerViewModel: ViewModel() {
     {
         _job?.cancel()
         _job = viewModelScope.launch {
-            fetch(false)
+            if(!fetch(false))
+                return@launch
 
             var startTime = NotifyData.game.uiState.value.updatedAt / 1000.0
             while(true)
@@ -32,7 +33,8 @@ class TimerViewModel: ViewModel() {
                 val minutes = floor(minutesFloat).toInt()
                 val seconds = floor((minutesFloat - minutes) * 60).toInt()
                 if(minutes < 0 && seconds <= 0 || seconds <= 0) {
-                    fetch(minutes == 0)
+                    if(!fetch(minutes == 0))
+                        break
                     startTime = NotifyData.game.uiState.value.updatedAt / 1000.0
                     continue
                 }
@@ -53,12 +55,13 @@ class TimerViewModel: ViewModel() {
         return ((currentTime + next) * 1000)
     }
 
-    suspend fun fetch(tryConnect: Boolean)
+    suspend fun fetch(tryConnect: Boolean): Boolean
     {
         val currentUpdatedAt = NotifyData.game.uiState.value.updatedAt
         
         for(i in 1..5) {
-            NotifyData.game.fetchStocks()
+            if(!NotifyData.game.fetchStocks())
+                return false
 
             if(!tryConnect)
                 break
@@ -68,5 +71,7 @@ class TimerViewModel: ViewModel() {
 
             delay(5000)
         }
+
+        return true
     }
 }

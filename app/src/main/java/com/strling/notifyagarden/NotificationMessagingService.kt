@@ -85,6 +85,9 @@ class NotificationMessagingService: FirebaseMessagingService() {
             {
                 for(weather in stocks.weather)
                 {
+                    if(!favorites.contains(weather.name))
+                        continue
+
                     val notification = buildNotification(
                         this@NotificationMessagingService,
                         "Weather is now ${weather.name}!",

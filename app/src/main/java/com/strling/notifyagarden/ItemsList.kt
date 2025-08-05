@@ -26,6 +26,7 @@ data class ItemsList(
     val gears: List<ItemValue>,
     val eggs : List<ItemValue>,
     val events: List<ItemValue>,
+    val weather: List<ItemValue>,
 )
 
 object GameItemsAPI
@@ -76,11 +77,13 @@ object GameItemsAPI
             builder.clearGears()
             builder.clearEggs()
             builder.clearEvents()
+            builder.clearWeather()
             val itemsList = listOf(
                 Pair(Categories.SEEDS, gamesItemsList.seeds),
                 Pair(Categories.GEARS, gamesItemsList.gears),
                 Pair(Categories.EGGS,  gamesItemsList.eggs),
-                Pair(Categories.EVENTS, gamesItemsList.events)
+                Pair(Categories.EVENTS, gamesItemsList.events),
+                Pair(Categories.WEATHER, gamesItemsList.weather)
             )
             for((category, categoryList) in itemsList) {
                 for (item in categoryList) {

@@ -41,6 +41,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -68,6 +70,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -75,8 +78,11 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.core.app.ActivityCompat
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
@@ -171,7 +177,6 @@ class MainActivity : ComponentActivity() {
     {
         val timerViewModel: TimerViewModel by viewModels()
         val editMode = remember { mutableStateOf(false) }
-        val scheduler = NotifyAlarmManager(this)
         val preferences = NotifyDataStore(this)
         val favorites = preferences.favorites.collectAsState(emptySet())
         NotifyData.game.favorites.value = favorites.value
@@ -196,7 +201,7 @@ class MainActivity : ComponentActivity() {
         Scaffold(topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 expandedAppBar(height = connection.appBarHeight, currentSelected = currentSelected.value, editable = editMode)
-                collapsedAppBar(height = connection.appBarHeight, editable = editMode, scheduler = scheduler, preferences = preferences)
+                collapsedAppBar(height = connection.appBarHeight, editable = editMode, preferences = preferences)
             }
         }, bottomBar = { bottomAppBar(currentSelected = currentSelected, gameItems = gameItems) }, modifier = Modifier.fillMaxSize().nestedScroll(connection), containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
             val uiState = NotifyData.game.uiState.collectAsState()
@@ -208,7 +213,6 @@ class MainActivity : ComponentActivity() {
                 scrollState = scrollStates[currentSelected.value.ordinal],
                 editMode = editMode,
                 category = currentSelected.value,
-                scheduler = scheduler,
                 preferences = preferences,
                 timerViewModel = timerViewModel,
             )
@@ -262,7 +266,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun displayCategory(modifier: Modifier = Modifier, items: List<ShopDataView>, scrollState: ScrollState, editMode: MutableState<Boolean>, category: Categories, scheduler: NotifyAlarmManager, preferences: NotifyDataStore, timerViewModel: TimerViewModel)
+    fun displayCategory(modifier: Modifier = Modifier, items: List<ShopDataView>, scrollState: ScrollState, editMode: MutableState<Boolean>, category: Categories, preferences: NotifyDataStore, timerViewModel: TimerViewModel)
     {
         Column(modifier = modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).verticalScroll(scrollState))
         {
@@ -325,9 +329,29 @@ class MainActivity : ComponentActivity() {
                         contentColor = MaterialTheme.colorScheme.onSurface,
                         containerColor = MaterialTheme.colorScheme.background,
                     )
-                    Categories.entries.forEach { category ->
-                        if(category == Categories.EVENTS && gameItems.eventsList.isEmpty())
-                            return@forEach
+                    Categories.entries.forEachIndexed { i, category ->
+                        if(i == 3)
+                        {
+                            val expanded = remember { mutableStateOf(false) }
+                            IconButton(onClick = { expanded.value = true },
+                                modifier = Modifier.fillMaxSize().weight(1.0f)) {
+                                Icon(
+                                    contentDescription = "Menu",
+                                    imageVector = ImageVector.vectorResource(R.drawable.menu)
+                                )
+                            }
+                            if(expanded.value) {
+                                OneUIDropdown(
+                                    onDismiss = { expanded.value = false },
+                                    currentSelected = currentSelected,
+                                    isEventEmpty = gameItems.eventsList.isEmpty()
+                                )
+                            }
+                            return@forEachIndexed
+                        } else if(i > 2)
+                        {
+                            return@forEachIndexed
+                        }
 
                         Button(
                             modifier = Modifier.weight(1.0f),
@@ -362,7 +386,6 @@ class MainActivity : ComponentActivity() {
         var progress = (height / TOP_BAR_HEIGHT.toFloat()).coerceIn(0.0f, 1.0f)
         progress = 2.0f * (progress - 0.5f)
         val title = if(editable.value) "Notify me on" else "Stock"
-        val totalHeight = (height + 56) / 2.0
 
         TopAppBar(
             modifier = modifier.height(height.dp).padding(top = padding),
@@ -373,7 +396,6 @@ class MainActivity : ComponentActivity() {
                         title,
                         fontSize = 40.sp,
                         modifier = Modifier.graphicsLayer { alpha = progress }
-                            .offset(y = (totalHeight - (height / 2)).dp)
                     )
                 }
             },
@@ -385,7 +407,7 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun collapsedAppBar(modifier: Modifier = Modifier, height: Int, editable: MutableState<Boolean>, scheduler: NotifyAlarmManager, preferences: NotifyDataStore)
+    fun collapsedAppBar(modifier: Modifier = Modifier, height: Int, editable: MutableState<Boolean>, preferences: NotifyDataStore)
     {
         var progress = (height / TOP_BAR_HEIGHT.toFloat()).coerceIn(0.0f, 1.0f)
         progress = 2.0f * (progress)
