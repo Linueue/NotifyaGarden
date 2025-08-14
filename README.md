@@ -14,7 +14,7 @@ This app uses both a client (this), and a server. The server uses WebSocket API 
 
 ## Client
 
-You can simply download the .apk from Releases section, and install it in your device. Make sure to allow Notifications permission.
+You can simply download the .apk from [Releases](https://github.com/Linueue/NotifyaGarden/releases/tag/release) section, and install it in your device. Make sure to allow Notifications permission.
 
 If not, you must clone this repo
 
