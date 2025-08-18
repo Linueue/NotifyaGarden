@@ -1,5 +1,5 @@
 {
-  "version": "1.17.0",
+  "version": "1.19.0",
   "seeds": [
     {
       "name": "Carrot",
@@ -115,6 +115,11 @@
       "name": "Elder Strawberry",
       "icon": "🍓",
       "color": 4292558113
+    },
+    {
+      "name": "Romanesco",
+      "icon": "🥦",
+      "color": 4286297697
     }
   ],
   "gears": [

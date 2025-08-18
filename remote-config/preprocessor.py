@@ -39,7 +39,7 @@ class Items:
             f.write(json.dumps(values, ensure_ascii=False, indent=2))
 
 def main():
-    items = Items("1.17.0")
+    items = Items("1.19.0")
 
     items.add(Categories.SEEDS, Item("Carrot", "🥕", 0xFFFFA500))
     items.add(Categories.SEEDS, Item("Strawberry", "🍓", 0xFFDB3D21))
@@ -64,6 +64,7 @@ def main():
     items.add(Categories.SEEDS, Item("Burning Bud", "☀️", 0xFFB22222))
     items.add(Categories.SEEDS, Item("Giant Pinecone", "🌲", 0xFF8B4513))
     items.add(Categories.SEEDS, Item("Elder Strawberry", "🍓", 0xFFDB3D21))
+    items.add(Categories.SEEDS, Item("Romanesco", "🥦", 0xFF7BB661))
 
     items.add(Categories.GEARS, Item("Watering Can", "🪣", 0xFFB0C4DE))
     items.add(Categories.GEARS, Item("Trading Ticket", "🎟️", 0xFFFFD700))
