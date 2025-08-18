@@ -6,7 +6,7 @@
 
 # Notify a Garden
 
-A simple Android app to notify you about stocks in the Roblox game, "[Grow a Garden](https://www.roblox.com/games/126884695634066/Grow-a-Garden)," with UI inspired by Samsung OneUI apps based on their [design guide](https://design.samsung.com/global/contents/one-ui/download/oneui_design_guide_eng.pdf) written entirely in Kotlin.
+A simple Android app to notify you about stocks in the Roblox game, "[Grow a Garden](https://www.roblox.com/games/126884695634066/Grow-a-Garden)," (Grow a Garden Notifier) with UI inspired by Samsung OneUI apps based on their [design guide](https://design.samsung.com/global/contents/one-ui/download/oneui_design_guide_eng.pdf) written entirely in Kotlin.
 
 This app uses both a client (this), and a server. The server uses WebSocket API from [JStudio](https://discord.com/invite/growagardenapio), and sends it to Firebase Firestore for almost real time stock notification.
 
